@@ -8,15 +8,15 @@
   <!-- Gör att sidan kan köras som "app" från hemskärmen på iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Tidsanteckningar" />
+  <meta name="apple-mobile-web-app-title" content="Skolgång" />
 
   <!-- Färg på bakgrund/adressrad (Android m.fl.) -->
-  <meta name="theme-color" content="#f5f5f5" />
+  <meta name="theme-color" content="#121212" />
 
-  <!-- Ikon för hemskärmen (skapa en kvadratisk PNG, t.ex. 192x192 px) -->
+  <!-- Ikon för hemskärmen -->
   <link rel="apple-touch-icon" href="icon-193.png" />
 
-  <!-- Manifest för PWA (exempel längre ner) -->
+  <!-- Manifest för PWA -->
   <link rel="manifest" href="manifest.webmanifest" />
   
   <style>
@@ -28,6 +28,7 @@
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: #f5f5f5;
+      color: #111;
     }
 
     .app {
@@ -36,9 +37,29 @@
       padding: 1rem;
     }
 
+    /* Översta raden med tema-knappen */
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 0.5rem;
+    }
+
+    .top-bar button {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid #ccc;
+      background: #f0f0f0;
+      cursor: pointer;
+    }
+
+    .top-bar button:active {
+      opacity: 0.7;
+    }
+
     h1 {
       font-size: 1.3rem;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.2rem;
     }
 
     .hint {
@@ -95,6 +116,7 @@
       border: 1px solid #ccc;
       resize: vertical;
       background: #fff;
+      color: #111;
     }
 
     .tab-actions {
@@ -117,42 +139,34 @@
       opacity: 0.7;
     }
 
-    /* Snabbknappar för beteenden */
     /* Snabbknappar för vanliga händelser */
-.quick-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin: 0.2rem 0 0.8rem;
-}
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 0.2rem 0 0.8rem;
+    }
 
-.quick-actions button {
-  font-size: 0.75rem;
-  padding: 0.35rem 0.7rem;
-  border-radius: 999px;
-  border: none;
-  background: #ffb3b3;        /* mild röd/pastell */
-  color: #660000;             /* mörkröd text för bra kontrast */
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* Grön knapp – denna överskriver den röda */
-.quick-actions button.green-btn {
-  background: #b6e8b6;   /* samma milda gröna som tidigare */
-  color: #0f4d0f;        /* mörkgrön text */
-}
+    .quick-actions button {
+      font-size: 0.75rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      border: none;
+      background: #ffb3b3;        /* mild röd/pastell */
+      color: #660000;             /* mörkröd text för bra kontrast */
+      font-weight: 600;
+      cursor: pointer;
+    }
     
-.quick-actions button:active {
-  opacity: 0.8;
-}
+    .quick-actions button:active {
+      opacity: 0.8;
+    }
 
-/* Grön knapp – positivt beteende */
-.green-btn {
-  background: #b6e8b6;   /* ljusgrön */
-  color: #0f4d0f;        /* mörkgrön text */
-  font-weight: 600; 
-}
+    /* Grön knapp – positivt beteende (överskriver röd) */
+    .quick-actions button.green-btn {
+      background: #b6e8b6;   /* ljusgrön */
+      color: #0f4d0f;        /* mörkgrön text */
+    }
 
     @media (min-width: 768px) {
       .app {
@@ -162,10 +176,72 @@
         font-size: 1.6rem;
       }
     }
+
+    /* =========================
+       MÖRKT LÄGE
+       ========================= */
+    body.dark {
+      background: #121212;
+      color: #f5f5f5;
+    }
+
+    body.dark .hint {
+      color: #bbbbbb;
+    }
+
+    body.dark textarea {
+      background: #1e1e1e;
+      border-color: #444;
+      color: #f5f5f5;
+    }
+
+    body.dark .tab {
+      background: #333;
+      border-color: #555;
+      color: #f5f5f5;
+    }
+
+    body.dark .tab.active {
+      background: #1e88e5;
+      border-color: #1e88e5;
+      color: #ffffff;
+    }
+
+    body.dark .tab-add {
+      border-color: #666;
+      color: #f5f5f5;
+    }
+
+    body.dark .tab-actions button {
+      background: #333;
+      border-color: #555;
+      color: #f5f5f5;
+    }
+
+    body.dark .quick-actions button {
+      background: #8b3b3b;   /* mörkare röd */
+      color: #ffe5e5;
+    }
+
+    body.dark .quick-actions button.green-btn {
+      background: #2e7d32;   /* tydlig grön */
+      color: #e8f5e9;
+    }
+
+    body.dark .top-bar button {
+      background: #333;
+      border-color: #555;
+      color: #f5f5f5;
+    }
   </style>
 </head>
 <body>
   <div class="app">
+    <!-- Tema-knapp högst upp -->
+    <div class="top-bar">
+      <button id="themeToggleBtn" type="button">Mörkt läge</button>
+    </div>
+
     <h1>Skolgångshandledarappen</h1>
     <p class="hint">
       Varje ny rad börjar automatiskt med aktuell tid (HH:MM). Använd flikarna för olika elever.
@@ -191,7 +267,6 @@
       <button type="button" class="quick-btn" data-label="Använder fula ord">Använder fula ord</button>
       <button type="button" class="quick-btn" data-label="Tjafsar emot">Tjafsar emot</button>
       <button type="button" class="quick-btn green-btn" data-label="Ber om ursäkt">Ber om ursäkt</button>
-      <!-- lägg till fler här om du vill -->
     </div>
 
     <!-- Själva textfältet -->
@@ -200,6 +275,7 @@
 
   <script>
     const STORAGE_KEY = 'timeNotesApp_v1';
+    const THEME_KEY = 'timeNotesApp_theme';
 
     let state = {
       tabs: [],
@@ -417,6 +493,26 @@
       }
     }
 
+    // ====== Tema (mörkt / ljust) ======
+    function loadTheme() {
+      const saved = localStorage.getItem(THEME_KEY);
+      if (saved === 'dark' || saved === 'light') return saved;
+      return 'light';
+    }
+
+    function saveTheme(mode) {
+      localStorage.setItem(THEME_KEY, mode);
+    }
+
+    function applyTheme(mode) {
+      const isDark = mode === 'dark';
+      document.body.classList.toggle('dark', isDark);
+      const btn = document.getElementById('themeToggleBtn');
+      if (btn) {
+        btn.textContent = isDark ? 'Ljust läge' : 'Mörkt läge';
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       const ta = document.getElementById('notes');
       const tabsContainer = document.getElementById('tabs');
@@ -426,6 +522,11 @@
       const insertDateBtn = document.getElementById('insertDateBtn');
       const exportBtn = document.getElementById('exportBtn');
       const quickButtons = document.querySelectorAll('.quick-btn');
+      const themeToggleBtn = document.getElementById('themeToggleBtn');
+
+      // Tema först
+      let currentTheme = loadTheme();
+      applyTheme(currentTheme);
 
       loadState();
       renderTabs(tabsContainer, ta);
@@ -444,6 +545,13 @@
           const label = btn.getAttribute('data-label');
           insertQuickEntry(label, ta);
         });
+      });
+
+      // Växla tema
+      themeToggleBtn.addEventListener('click', () => {
+        currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(currentTheme);
+        saveTheme(currentTheme);
       });
 
       // Enter → ny rad + tid
