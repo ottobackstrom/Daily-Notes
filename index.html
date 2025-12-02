@@ -104,25 +104,35 @@
     }
 
     /* Snabbknappar för beteenden */
-    .quick-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      margin: 0.2rem 0 0.8rem;
-    }
+    /* Snabbknappar för vanliga händelser */
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.2rem 0 0.8rem;
+}
 
-    .quick-actions button {
-      font-size: 0.75rem;
-      padding: 0.35rem 0.7rem;
-      border-radius: 999px;
-      border: 1px solid #ddd;
-      background: #fff;
-      cursor: pointer;
-    }
+.quick-actions button {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: none;
+  background: #ffb3b3;        /* mild röd/pastell */
+  color: #660000;             /* mörkröd text för bra kontrast */
+  font-weight: 600;
+  cursor: pointer;
+}
 
-    .quick-actions button:active {
-      opacity: 0.7;
-    }
+.quick-actions button:active {
+  opacity: 0.8;
+}
+
+/* Grön knapp – positivt beteende */
+.green-btn {
+  background: #b6e8b6;   /* ljusgrön */
+  color: #0f4d0f;        /* mörkgrön text */
+  font-weight: 600; 
+}
 
     @media (min-width: 768px) {
       .app {
@@ -160,6 +170,7 @@
       <button type="button" class="quick-btn" data-label="Slåss">Slåss</button>
       <button type="button" class="quick-btn" data-label="Använder fula ord">Använder fula ord</button>
       <button type="button" class="quick-btn" data-label="Tjafsar emot">Tjafsar emot</button>
+      <button type="button" class="quick-btn green-btn" data-label="Ber om ursäkt">Ber om ursäkt</button>
       <!-- lägg till fler här om du vill -->
     </div>
 
