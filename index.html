@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <title>Tids-anteckningar</title>
+  <style>
+    body { font-family: sans-serif; padding: 1rem; }
+    textarea { width: 100%; height: 400px; font-family: monospace; line-height: 1.4; }
+  </style>
+</head>
+<body>
+  <h1>Mina anteckningar</h1>
+  <textarea id="notes" placeholder="Börja skriva..."></textarea>
+
+  <script>
+    const ta = document.getElementById('notes');
+
+    function currentTimeString() {
+      const d = new Date();
+      const h = String(d.getHours()).padStart(2, '0');
+      const m = String(d.getMinutes()).padStart(2, '0');
+      return h + ':' + m + ' ';
+    }
+
+    ta.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        // När användaren trycker Enter → infoga tid på ny rad
+        e.preventDefault();
+        const { selectionStart } = ta;
+        const before = ta.value.substring(0, selectionStart);
+        const after = ta.value.substring(selectionStart);
+        const timeStr = '\\n' + currentTimeString();
+        ta.value = before + timeStr + after;
+        // Flytta markören efter tiden
+        const newPos = before.length + timeStr.length;
+        ta.setSelectionRange(newPos, newPos);
+      } else if (ta.value.length === 0 && ta.selectionStart === 0) {
+        // Om det är allra första raden: sätt tid direkt
+        ta.value = currentTimeString();
+      }
+    });
+
+    // När sidan laddas — om textarea är tom: skriv tid direkt
+    window.addEventListener('load', () => {
+      if (!ta.value) {
+        ta.value = currentTimeString();
+      }
+    });
+  </script>
+</body>
+</html>
