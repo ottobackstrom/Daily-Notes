@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
   <meta charset="utf-8" />
-  <title>Tidsanteckningar</title>
+  <title>Tidsanteckningar – elever</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
@@ -33,9 +33,45 @@
       margin-bottom: 0.75rem;
     }
 
+    /* Flikar */
+    .tabs-container {
+      display: flex;
+      gap: 0.25rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .tab {
+      flex: 0 0 auto;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid #ccc;
+      background: #e7e7e7;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: #fff;
+      border-color: #007aff;
+      font-weight: 600;
+    }
+
+    .tab-add {
+      flex: 0 0 auto;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      border: 1px dashed #aaa;
+      background: transparent;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
     textarea {
       width: 100%;
-      min-height: 70vh;
+      min-height: 65vh;
       font-family: "SF Mono", Menlo, Consolas, monospace;
       font-size: 16px; /* viktigt på mobil så inte zoom triggas */
       line-height: 1.4;
@@ -44,6 +80,26 @@
       border: 1px solid #ccc;
       resize: vertical;
       background: #fff;
+    }
+
+    .tab-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0.4rem 0 0.8rem;
+    }
+
+    .tab-actions button {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid #ccc;
+      background: #f0f0f0;
+      cursor: pointer;
+    }
+
+    .tab-actions button:active {
+      opacity: 0.7;
     }
 
     @media (min-width: 768px) {
@@ -58,58 +114,17 @@
 </head>
 <body>
   <div class="app">
-    <h1>Tidsanteckningar</h1>
+    <h1>Tidsanteckningar – elever</h1>
     <p class="hint">
-      Varje ny rad börjar automatiskt med aktuell tid (HH:MM).
+      Varje ny rad börjar automatiskt med aktuell tid (HH:MM). Använd flikarna för olika elever.
     </p>
-    <textarea id="notes" placeholder="Börja skriva här..."></textarea>
-  </div>
 
-  <script>
-    const ta = document.getElementById('notes');
+    <!-- Flikar -->
+    <div class="tabs-container" id="tabs"></div>
 
-    function currentTimeString() {
-      const d = new Date();
-      const h = String(d.getHours()).padStart(2, '0');
-      const m = String(d.getMinutes()).padStart(2, '0');
-      return h + ':' + m + ' ';
-    }
+    <!-- Knapp för att lägga till flik -->
+    <button class="tab-add" id="addTabBtn">＋ Ny elev</button>
 
-    function ensureFirstLineHasTime() {
-      if (!ta.value.trim()) {
-        ta.value = currentTimeString();
-        // Sätt markören sist
-        const pos = ta.value.length;
-        ta.setSelectionRange(pos, pos);
-      }
-    }
-
-    // När sidan laddas – se till att första raden får tid
-    window.addEventListener('load', ensureFirstLineHasTime);
-
-    // Om användaren tömmer allt och klickar in igen
-    ta.addEventListener('focus', ensureFirstLineHasTime);
-
-    // Hantera Enter → ny rad + tid som första på raden
-    ta.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-
-        const start = ta.selectionStart;
-        const end = ta.selectionEnd;
-        const value = ta.value;
-
-        const before = value.slice(0, start);
-        const after = value.slice(end);
-
-        const insertText = '\n' + currentTimeString(); // radbrytning + tid
-
-        ta.value = before + insertText + after;
-
-        const newPos = before.length + insertText.length;
-        ta.setSelectionRange(newPos, newPos);
-      }
-    });
-  </script>
-</body>
-</html>
+    <!-- Åtgärder för aktiv flik -->
+    <div class="tab-actions">
+      <button id="renameTabBtn">Byt namn på fl
