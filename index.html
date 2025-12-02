@@ -1,25 +1,9 @@
 <!DOCTYPE html>
 <html lang="sv">
-<!DOCTYPE html>
-<html lang="sv">
 <head>
   <meta charset="utf-8" />
   <title>Tidsanteckningar – elever</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- Gör att sidan kan köras som "app" från hemskärmen på iOS -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Tidsanteckningar" />
-
-  <!-- Färg på bakgrund/adressrad (Android m.fl.) -->
-  <meta name="theme-color" content="#f5f5f5" />
-
-  <!-- Ikon för hemskärmen (skapa en kvadratisk PNG, t.ex. 192x192 px) -->
-  <link rel="apple-touch-icon" href="icon-192.png" />
-
-  <!-- Manifest för PWA (exempel längre ner) -->
-  <link rel="manifest" href="manifest.webmanifest" />
 
   <style>
     * {
@@ -49,6 +33,7 @@
       margin-bottom: 0.75rem;
     }
 
+    /* Flikar */
     .tabs-container {
       display: flex;
       gap: 0.25rem;
@@ -87,7 +72,7 @@
 
     textarea {
       width: 100%;
-      min-height: 65vh;
+      min-height: 55vh;
       font-family: "SF Mono", Menlo, Consolas, monospace;
       font-size: 16px;
       line-height: 1.4;
@@ -102,7 +87,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
-      margin: 0.4rem 0 0.8rem;
+      margin: 0.4rem 0 0.4rem;
     }
 
     .tab-actions button {
@@ -115,6 +100,27 @@
     }
 
     .tab-actions button:active {
+      opacity: 0.7;
+    }
+
+    /* Snabbknappar för beteenden */
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 0.2rem 0 0.8rem;
+    }
+
+    .quick-actions button {
+      font-size: 0.75rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid #ddd;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .quick-actions button:active {
       opacity: 0.7;
     }
 
@@ -139,14 +145,22 @@
     <div class="tabs-container" id="tabs"></div>
 
     <!-- Knapp för att lägga till flik -->
-    <button class="tab-add" id="addTabBtn">＋ Ny elev</button>
+    <button class="tab-add" id="addTabBtn" type="button">＋ Ny elev</button>
 
     <!-- Åtgärder för aktiv flik -->
     <div class="tab-actions">
-      <button id="renameTabBtn">Byt namn på flik</button>
-      <button id="deleteTabBtn">Ta bort flik</button>
-      <button id="insertDateBtn">Infoga datumrubrik</button>
-      <button id="exportBtn">Exportera till .txt</button>
+      <button id="renameTabBtn" type="button">Byt namn på flik</button>
+      <button id="deleteTabBtn" type="button">Ta bort flik</button>
+      <button id="insertDateBtn" type="button">Infoga datumrubrik</button>
+      <button id="exportBtn" type="button">Exportera till .txt</button>
+    </div>
+
+    <!-- Snabbknappar för vanliga händelser -->
+    <div class="quick-actions">
+      <button type="button" class="quick-btn" data-label="Slåss">Slåss</button>
+      <button type="button" class="quick-btn" data-label="Använder fula ord">Använder fula ord</button>
+      <button type="button" class="quick-btn" data-label="Tjafsar emot">Tjafsar emot</button>
+      <!-- lägg till fler här om du vill -->
     </div>
 
     <!-- Själva textfältet -->
@@ -213,6 +227,7 @@
         const btn = document.createElement('button');
         btn.className = 'tab' + (tab.id === state.activeId ? ' active' : '');
         btn.textContent = tab.name;
+        btn.type = 'button';
         btn.addEventListener('click', () => {
           switchTab(tab.id, tabsContainer, ta);
         });
@@ -348,6 +363,29 @@
       URL.revokeObjectURL(url);
     }
 
+    // Snabbknapp: ny rad + tid + label
+    function insertQuickEntry(label, ta) {
+      const start = ta.selectionStart;
+      const end = ta.selectionEnd;
+      const value = ta.value;
+
+      const before = value.slice(0, start);
+      const after = value.slice(end);
+
+      const insertText = '\n' + currentTimeString() + label;
+
+      ta.value = before + insertText + after;
+
+      const newPos = before.length + insertText.length;
+      ta.setSelectionRange(newPos, newPos);
+
+      const tab = getActiveTab();
+      if (tab) {
+        tab.content = ta.value;
+        saveState();
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       const ta = document.getElementById('notes');
       const tabsContainer = document.getElementById('tabs');
@@ -356,6 +394,7 @@
       const deleteTabBtn = document.getElementById('deleteTabBtn');
       const insertDateBtn = document.getElementById('insertDateBtn');
       const exportBtn = document.getElementById('exportBtn');
+      const quickButtons = document.querySelectorAll('.quick-btn');
 
       loadState();
       renderTabs(tabsContainer, ta);
@@ -369,6 +408,14 @@
       insertDateBtn.addEventListener('click', () => insertDateHeadingAtCursor(ta));
       exportBtn.addEventListener('click', () => exportCurrentTab(ta));
 
+      quickButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const label = btn.getAttribute('data-label');
+          insertQuickEntry(label, ta);
+        });
+      });
+
+      // Enter → ny rad + tid
       ta.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
           e.preventDefault();
