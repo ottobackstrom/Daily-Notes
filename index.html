@@ -67,13 +67,14 @@
       background: transparent;
       font-size: 1rem;
       cursor: pointer;
+      margin-bottom: 0.5rem;
     }
 
     textarea {
       width: 100%;
       min-height: 65vh;
       font-family: "SF Mono", Menlo, Consolas, monospace;
-      font-size: 16px; /* viktigt på mobil så inte zoom triggas */
+      font-size: 16px;
       line-height: 1.4;
       padding: 0.75rem;
       border-radius: 0.5rem;
@@ -127,4 +128,266 @@
 
     <!-- Åtgärder för aktiv flik -->
     <div class="tab-actions">
-      <button id="renameTabBtn">Byt namn på fl
+      <button id="renameTabBtn">Byt namn på flik</button>
+      <button id="deleteTabBtn">Ta bort flik</button>
+      <button id="insertDateBtn">Infoga datumrubrik</button>
+      <button id="exportBtn">Exportera till .txt</button>
+    </div>
+
+    <!-- Själva textfältet -->
+    <textarea id="notes" placeholder="Börja skriva här..."></textarea>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'timeNotesApp_v1';
+
+    let state = {
+      tabs: [],
+      activeId: null
+    };
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try {
+          state = JSON.parse(raw);
+        } catch (e) {
+          console.error('Kunde inte läsa state, nollställer.', e);
+          state = { tabs: [], activeId: null };
+        }
+      }
+
+      if (!state.tabs || state.tabs.length === 0) {
+        const id = String(Date.now());
+        state.tabs = [
+          { id, name: 'Elev 1', content: '' }
+        ];
+        state.activeId = id;
+        saveState();
+      } else if (!state.activeId) {
+        state.activeId = state.tabs[0].id;
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function currentTimeString() {
+      const d = new Date();
+      const h = String(d.getHours()).padStart(2, '0');
+      const m = String(d.getMinutes()).padStart(2, '0');
+      return h + ':' + m + ' ';
+    }
+
+    function currentDateHeading() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return '=== ' + y + '-' + m + '-' + day + ' ===';
+    }
+
+    function getActiveTab() {
+      return state.tabs.find(t => t.id === state.activeId);
+    }
+
+    function renderTabs(tabsContainer, ta) {
+      tabsContainer.innerHTML = '';
+      state.tabs.forEach(tab => {
+        const btn = document.createElement('button');
+        btn.className = 'tab' + (tab.id === state.activeId ? ' active' : '');
+        btn.textContent = tab.name;
+        btn.addEventListener('click', () => {
+          switchTab(tab.id, tabsContainer, ta);
+        });
+        tabsContainer.appendChild(btn);
+      });
+    }
+
+    function switchTab(id, tabsContainer, ta) {
+      const current = getActiveTab();
+      if (current) {
+        current.content = ta.value;
+      }
+
+      state.activeId = id;
+      saveState();
+
+      const newTab = getActiveTab();
+      ta.value = newTab.content || '';
+
+      ensureFirstLineHasDateAndTime(ta);
+      renderTabs(tabsContainer, ta);
+    }
+
+    function addTab(tabsContainer, ta) {
+      const name = prompt('Namn på ny flik (t.ex. elevens namn):', '');
+      if (!name) return;
+
+      const id = String(Date.now()) + '_' + Math.random().toString(16).slice(2);
+      const newTab = { id, name: name.trim(), content: '' };
+
+      const current = getActiveTab();
+      if (current) {
+        current.content = ta.value;
+      }
+
+      state.tabs.push(newTab);
+      state.activeId = id;
+      saveState();
+
+      renderTabs(tabsContainer, ta);
+      ta.value = '';
+      ensureFirstLineHasDateAndTime(ta);
+    }
+
+    function renameTab(tabsContainer) {
+      const tab = getActiveTab();
+      if (!tab) return;
+      const newName = prompt('Nytt namn för fliken:', tab.name);
+      if (!newName) return;
+      tab.name = newName.trim();
+      saveState();
+      renderTabs(tabsContainer);
+    }
+
+    function deleteTab(tabsContainer, ta) {
+      if (state.tabs.length <= 1) {
+        alert('Du måste ha minst en flik.');
+        return;
+      }
+      const tab = getActiveTab();
+      if (!tab) return;
+      if (!confirm(`Ta bort fliken "${tab.name}"?`)) return;
+
+      state.tabs = state.tabs.filter(t => t.id !== tab.id);
+      state.activeId = state.tabs[0].id;
+      saveState();
+      renderTabs(tabsContainer, ta);
+      const newTab = getActiveTab();
+      ta.value = newTab.content || '';
+      ensureFirstLineHasDateAndTime(ta);
+    }
+
+    function ensureFirstLineHasDateAndTime(ta) {
+      if (!ta.value.trim()) {
+        const dateLine = currentDateHeading();
+        ta.value = dateLine + '\n' + currentTimeString();
+        const pos = ta.value.length;
+        ta.setSelectionRange(pos, pos);
+      }
+    }
+
+    function insertDateHeadingAtCursor(ta) {
+      const heading = currentDateHeading();
+      const start = ta.selectionStart;
+      const end = ta.selectionEnd;
+      const value = ta.value;
+
+      const before = value.slice(0, start);
+      const after = value.slice(end);
+
+      const needsLeadingNewline = start > 0 && !before.endsWith('\n');
+      const insertText =
+        (needsLeadingNewline ? '\n' : '') +
+        heading +
+        '\n' +
+        currentTimeString();
+
+      ta.value = before + insertText + after;
+      const newPos = before.length + insertText.length;
+      ta.setSelectionRange(newPos, newPos);
+
+      const tab = getActiveTab();
+      if (tab) {
+        tab.content = ta.value;
+        saveState();
+      }
+    }
+
+    function exportCurrentTab(ta) {
+      const tab = getActiveTab();
+      if (!tab) return;
+
+      const text = ta.value;
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+
+      let safeName = tab.name.replace(/[^a-z0-9_\-]+/gi, '_');
+      if (!safeName) safeName = 'anteckning';
+
+      const filename = `${safeName}_${y}-${m}-${day}.txt`;
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const ta = document.getElementById('notes');
+      const tabsContainer = document.getElementById('tabs');
+      const addTabBtn = document.getElementById('addTabBtn');
+      const renameTabBtn = document.getElementById('renameTabBtn');
+      const deleteTabBtn = document.getElementById('deleteTabBtn');
+      const insertDateBtn = document.getElementById('insertDateBtn');
+      const exportBtn = document.getElementById('exportBtn');
+
+      loadState();
+      renderTabs(tabsContainer, ta);
+      const tab = getActiveTab();
+      ta.value = (tab && tab.content) || '';
+      ensureFirstLineHasDateAndTime(ta);
+
+      addTabBtn.addEventListener('click', () => addTab(tabsContainer, ta));
+      renameTabBtn.addEventListener('click', () => renameTab(tabsContainer));
+      deleteTabBtn.addEventListener('click', () => deleteTab(tabsContainer, ta));
+      insertDateBtn.addEventListener('click', () => insertDateHeadingAtCursor(ta));
+      exportBtn.addEventListener('click', () => exportCurrentTab(ta));
+
+      ta.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+
+          const start = ta.selectionStart;
+          const end = ta.selectionEnd;
+          const value = ta.value;
+
+          const before = value.slice(0, start);
+          const after = value.slice(end);
+
+          const insertText = '\n' + currentTimeString();
+
+          ta.value = before + insertText + after;
+
+          const newPos = before.length + insertText.length;
+          ta.setSelectionRange(newPos, newPos);
+
+          const tab = getActiveTab();
+          if (tab) {
+            tab.content = ta.value;
+            saveState();
+          }
+        }
+      });
+
+      ta.addEventListener('input', () => {
+        const tab = getActiveTab();
+        if (tab) {
+          tab.content = ta.value;
+          saveState();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
