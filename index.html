@@ -579,6 +579,25 @@
       if (btn) btn.textContent = dark ? "🌙" : "🌞";
     }
 
+    // Försök stoppa pinch-zoom (nyp-zoom)
+document.addEventListener('touchmove', function (event) {
+  if (event.touches.length > 1) {
+    // Fler än ett finger = försök till pinch
+    event.preventDefault();
+  }
+}, { passive: false });
+
+// Försök stoppa dubbel-tap-zoom
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function (event) {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) {
+    // Två snabba taps inom 300 ms → stoppa zoom
+    event.preventDefault();
+  }
+  lastTouchEnd = now;
+}, false);
+
     window.onload = () => {
       const ta = document.getElementById("notes");
       const tabs = document.getElementById("tabs");
