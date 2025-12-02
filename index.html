@@ -1,16 +1,69 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="utf-8">
-  <title>Tids-anteckningar</title>
+  <meta charset="utf-8" />
+  <title>Tidsanteckningar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <style>
-    body { font-family: sans-serif; padding: 1rem; }
-    textarea { width: 100%; height: 400px; font-family: monospace; line-height: 1.4; }
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f5;
+    }
+
+    .app {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    h1 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .hint {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 0.75rem;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 70vh;
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+      font-size: 16px; /* viktigt på mobil så inte zoom triggas */
+      line-height: 1.4;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+      resize: vertical;
+      background: #fff;
+    }
+
+    @media (min-width: 768px) {
+      .app {
+        padding: 2rem;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Mina anteckningar</h1>
-  <textarea id="notes" placeholder="Börja skriva..."></textarea>
+  <div class="app">
+    <h1>Tidsanteckningar</h1>
+    <p class="hint">
+      Varje ny rad börjar automatiskt med aktuell tid (HH:MM).
+    </p>
+    <textarea id="notes" placeholder="Börja skriva här..."></textarea>
+  </div>
 
   <script>
     const ta = document.getElementById('notes');
@@ -22,28 +75,39 @@
       return h + ':' + m + ' ';
     }
 
-    ta.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        // När användaren trycker Enter → infoga tid på ny rad
-        e.preventDefault();
-        const { selectionStart } = ta;
-        const before = ta.value.substring(0, selectionStart);
-        const after = ta.value.substring(selectionStart);
-        const timeStr = '\\n' + currentTimeString();
-        ta.value = before + timeStr + after;
-        // Flytta markören efter tiden
-        const newPos = before.length + timeStr.length;
-        ta.setSelectionRange(newPos, newPos);
-      } else if (ta.value.length === 0 && ta.selectionStart === 0) {
-        // Om det är allra första raden: sätt tid direkt
+    function ensureFirstLineHasTime() {
+      if (!ta.value.trim()) {
         ta.value = currentTimeString();
+        // Sätt markören sist
+        const pos = ta.value.length;
+        ta.setSelectionRange(pos, pos);
       }
-    });
+    }
 
-    // När sidan laddas — om textarea är tom: skriv tid direkt
-    window.addEventListener('load', () => {
-      if (!ta.value) {
-        ta.value = currentTimeString();
+    // När sidan laddas – se till att första raden får tid
+    window.addEventListener('load', ensureFirstLineHasTime);
+
+    // Om användaren tömmer allt och klickar in igen
+    ta.addEventListener('focus', ensureFirstLineHasTime);
+
+    // Hantera Enter → ny rad + tid som första på raden
+    ta.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+
+        const start = ta.selectionStart;
+        const end = ta.selectionEnd;
+        const value = ta.value;
+
+        const before = value.slice(0, start);
+        const after = value.slice(end);
+
+        const insertText = '\n' + currentTimeString(); // radbrytning + tid
+
+        ta.value = before + insertText + after;
+
+        const newPos = before.length + insertText.length;
+        ta.setSelectionRange(newPos, newPos);
       }
     });
   </script>
