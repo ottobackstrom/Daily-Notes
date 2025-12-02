@@ -540,17 +540,28 @@
     }
 
     function exportCurrentTab(ta) {
-      const tab = getActiveTab();
-      const text = ta.value;
-      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const filename = (tab.name || "anteckning").replace(/\W+/g,"_") + ".txt";
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
+  const tab = getActiveTab();
+  if (!tab) return;
+
+  const elevNamn = tab.name || "Okänd elev";
+
+  // Bygg texten som ska hamna i filen
+  const header = `Elev: ${elevNamn}\n\n`;
+  const body = ta.value || "";
+  const text = header + body;
+
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+
+  // Filnamn baserat på elevens namn
+  const filename = (elevNamn || "anteckning").replace(/\W+/g, "_") + ".txt";
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
     function insertQuickEntry(label, ta) {
       const start = ta.selectionStart;
