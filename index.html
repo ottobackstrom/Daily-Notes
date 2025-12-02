@@ -238,8 +238,8 @@
 <body>
   <div class="app">
     <!-- Tema-knapp högst upp -->
-    <div class="top-bar">
-      <button id="themeToggleBtn" type="button">Mörkt läge</button>
+   <div class="top-bar">
+  <button id="themeToggleBtn" type="button" aria-label="Växla tema">🌞</button>
     </div>
 
     <h1>Skolgångshandledarappen</h1>
@@ -505,13 +505,14 @@
     }
 
     function applyTheme(mode) {
-      const isDark = mode === 'dark';
-      document.body.classList.toggle('dark', isDark);
-      const btn = document.getElementById('themeToggleBtn');
-      if (btn) {
-        btn.textContent = isDark ? 'Ljust läge' : 'Mörkt läge';
-      }
-    }
+  const isDark = mode === 'dark';
+  document.body.classList.toggle('dark', isDark);
+  const btn = document.getElementById('themeToggleBtn');
+  if (btn) {
+    // Sol = ljust läge, Måne = mörkt läge
+    btn.textContent = isDark ? '🌙' : '🌞';
+  }
+}
 
     window.addEventListener('DOMContentLoaded', () => {
       const ta = document.getElementById('notes');
