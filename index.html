@@ -2,31 +2,23 @@
 <html lang="sv">
 <head>
   <meta charset="utf-8" />
-  <title>Skolgångshandledar-appen</title>
+  <title>Skolgångshandledarappen</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Gör att sidan kan köras som "app" från hemskärmen på iOS -->
+  <!-- iPhone App-stöd -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Skolgång" />
-
-  <!-- Färg på bakgrund/adressrad (Android m.fl.) -->
   <meta name="theme-color" content="#121212" />
-
-  <!-- Ikon för hemskärmen -->
   <link rel="apple-touch-icon" href="icon-193.png" />
-
-  <!-- Manifest för PWA -->
   <link rel="manifest" href="manifest.webmanifest" />
   
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       background: #f5f5f5;
       color: #111;
     }
@@ -37,30 +29,30 @@
       padding: 1rem;
     }
 
-    /* Översta raden med tema-knappen */
-    .top-bar {
+    /* ============== HEADER RAD ============== */
+
+    .header-row {
       display: flex;
-      justify-content: flex-end;
-      margin-bottom: 0.5rem;
-    }
-
-    .top-bar button {
-      font-size: 1.5rem;
-      padding: 0.3rem 0.7rem;
-      border-radius: 999px;
-      border: 1px solid #ccc;
-      background: #f0f0f0;
-      cursor: pointer;
-    }
-
-    .top-bar button:active {
-      opacity: 0.7;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.3rem;
     }
 
     h1 {
-      font-size: 1.3rem;
-      margin-bottom: 0.2rem;
+      font-size: 1.4rem;
+      margin: 0;
     }
+
+    /* Sol/Måne-knappen */
+    #themeToggleBtn {
+      font-size: 1.7rem;   /* ikonens storlek */
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0.1rem 0.3rem;
+      line-height: 1;
+    }
+    #themeToggleBtn:active { opacity: 0.6; }
 
     .hint {
       font-size: 0.9rem;
@@ -68,7 +60,8 @@
       margin-bottom: 0.75rem;
     }
 
-    /* Flikar */
+    /* ============== FLIKAR ============== */
+
     .tabs-container {
       display: flex;
       gap: 0.25rem;
@@ -84,8 +77,8 @@
       border: 1px solid #ccc;
       background: #e7e7e7;
       font-size: 0.85rem;
-      white-space: nowrap;
       cursor: pointer;
+      white-space: nowrap;
     }
 
     .tab.active {
@@ -95,15 +88,16 @@
     }
 
     .tab-add {
-      flex: 0 0 auto;
       padding: 0.35rem 0.7rem;
       border-radius: 999px;
       border: 1px dashed #aaa;
       background: transparent;
-      font-size: 1rem;
       cursor: pointer;
+      font-size: 1rem;
       margin-bottom: 0.5rem;
     }
+
+    /* ============== TEXTFÄLT & KNAPPAR ============== */
 
     textarea {
       width: 100%;
@@ -114,20 +108,20 @@
       padding: 0.75rem;
       border-radius: 0.5rem;
       border: 1px solid #ccc;
-      resize: vertical;
       background: #fff;
       color: #111;
+      resize: vertical;
     }
 
     .tab-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
-      margin: 0.4rem 0 0.4rem;
+      margin: 0.4rem 0;
     }
 
     .tab-actions button {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       padding: 0.3rem 0.6rem;
       border-radius: 999px;
       border: 1px solid #ccc;
@@ -135,11 +129,6 @@
       cursor: pointer;
     }
 
-    .tab-actions button:active {
-      opacity: 0.7;
-    }
-
-    /* Snabbknappar för vanliga händelser */
     .quick-actions {
       display: flex;
       flex-wrap: wrap;
@@ -152,41 +141,22 @@
       padding: 0.35rem 0.7rem;
       border-radius: 999px;
       border: none;
-      background: #ffb3b3;        /* mild röd/pastell */
-      color: #660000;             /* mörkröd text för bra kontrast */
+      background: #ffb3b3;
+      color: #660000;
       font-weight: 600;
       cursor: pointer;
     }
-    
-    .quick-actions button:active {
-      opacity: 0.8;
+
+    .quick-actions .green-btn {
+      background: #b6e8b6;
+      color: #0f4d0f;
     }
 
-    /* Grön knapp – positivt beteende (överskriver röd) */
-    .quick-actions button.green-btn {
-      background: #b6e8b6;   /* ljusgrön */
-      color: #0f4d0f;        /* mörkgrön text */
-    }
+    /* ============== DARK MODE ============== */
 
-    @media (min-width: 768px) {
-      .app {
-        padding: 2rem;
-      }
-      h1 {
-        font-size: 1.6rem;
-      }
-    }
-
-    /* =========================
-       MÖRKT LÄGE
-       ========================= */
     body.dark {
       background: #121212;
       color: #f5f5f5;
-    }
-
-    body.dark .hint {
-      color: #bbbbbb;
     }
 
     body.dark textarea {
@@ -195,113 +165,98 @@
       color: #f5f5f5;
     }
 
+    body.dark .hint { color: #aaa; }
+
     body.dark .tab {
       background: #333;
       border-color: #555;
-      color: #f5f5f5;
+      color: #eee;
     }
 
     body.dark .tab.active {
       background: #1e88e5;
       border-color: #1e88e5;
-      color: #ffffff;
-    }
-
-    body.dark .tab-add {
-      border-color: #666;
-      color: #f5f5f5;
+      color: #fff;
     }
 
     body.dark .tab-actions button {
       background: #333;
       border-color: #555;
-      color: #f5f5f5;
+      color: #eee;
     }
 
     body.dark .quick-actions button {
-      background: #8b3b3b;   /* mörkare röd */
+      background: #8b3b3b;
       color: #ffe5e5;
     }
 
-    body.dark .quick-actions button.green-btn {
-      background: #2e7d32;   /* tydlig grön */
+    body.dark .quick-actions .green-btn {
+      background: #2e7d32;
       color: #e8f5e9;
     }
 
-    body.dark .top-bar button {
-      background: #333;
-      border-color: #555;
+    body.dark #themeToggleBtn {
       color: #f5f5f5;
     }
   </style>
 </head>
+
 <body>
   <div class="app">
-    <!-- Tema-knapp högst upp -->
-   <div class="top-bar">
-  <button id="themeToggleBtn" type="button" aria-label="Växla tema">🌞</button>
+
+    <!-- HEADER MED RUBRIK + TEMA-KNAPP -->
+    <div class="header-row">
+      <h1>Skolgångshandledarappen</h1>
+      <button id="themeToggleBtn" type="button" aria-label="Växla tema">🌞</button>
     </div>
 
-    <h1>Skolgångshandledar-appen</h1>
     <p class="hint">
       Varje ny rad börjar automatiskt med aktuell tid (HH:MM). Använd flikarna för olika elever.
     </p>
 
-    <!-- Flikar -->
+    <!-- FLIKAR -->
     <div class="tabs-container" id="tabs"></div>
+    <button class="tab-add" id="addTabBtn">＋ Ny elev</button>
 
-    <!-- Knapp för att lägga till flik -->
-    <button class="tab-add" id="addTabBtn" type="button">＋ Ny elev</button>
-
-    <!-- Åtgärder för aktiv flik -->
+    <!-- FLIK-ÅTGÄRDER -->
     <div class="tab-actions">
-      <button id="renameTabBtn" type="button">Byt namn på flik</button>
-      <button id="deleteTabBtn" type="button">Ta bort flik</button>
-      <button id="insertDateBtn" type="button">Infoga datumrubrik</button>
-      <button id="exportBtn" type="button">Exportera till .txt</button>
+      <button id="renameTabBtn">Byt namn</button>
+      <button id="deleteTabBtn">Ta bort flik</button>
+      <button id="insertDateBtn">Datumrubrik</button>
+      <button id="exportBtn">Exportera .txt</button>
     </div>
 
-    <!-- Snabbknappar för vanliga händelser -->
+    <!-- SNABBKNAPPAR -->
     <div class="quick-actions">
-      <button type="button" class="quick-btn" data-label="Slåss">Slåss</button>
-      <button type="button" class="quick-btn" data-label="Använder fula ord">Använder fula ord</button>
-      <button type="button" class="quick-btn" data-label="Tjafsar emot">Tjafsar emot</button>
-      <button type="button" class="quick-btn green-btn" data-label="Ber om ursäkt">Ber om ursäkt</button>
+      <button class="quick-btn" data-label="Slåss">Slåss</button>
+      <button class="quick-btn" data-label="Använder fula ord">Använder fula ord</button>
+      <button class="quick-btn" data-label="Tjafsar emot">Tjafsar emot</button>
+      <button class="quick-btn green-btn" data-label="Ber om ursäkt">Ber om ursäkt</button>
     </div>
 
-    <!-- Själva textfältet -->
+    <!-- TEXTFÄLT -->
     <textarea id="notes" placeholder="Börja skriva här..."></textarea>
+
   </div>
 
   <script>
     const STORAGE_KEY = 'timeNotesApp_v1';
     const THEME_KEY = 'timeNotesApp_theme';
+    let state = { tabs: [], activeId: null };
 
-    let state = {
-      tabs: [],
-      activeId: null
-    };
+    /* ========== LADDA/SUMMERA ========== */
 
     function loadState() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
-        try {
-          state = JSON.parse(raw);
-        } catch (e) {
-          console.error('Kunde inte läsa state, nollställer.', e);
-          state = { tabs: [], activeId: null };
-        }
+        try { state = JSON.parse(raw); }
+        catch { state = { tabs: [], activeId: null }; }
       }
-
-      if (!state.tabs || state.tabs.length === 0) {
+      if (state.tabs.length === 0) {
         const id = String(Date.now());
-        state.tabs = [
-          { id, name: 'Elev 1', content: '' }
-        ];
+        state.tabs = [{ id, name: "Elev 1", content: "" }];
         state.activeId = id;
         saveState();
-      } else if (!state.activeId) {
-        state.activeId = state.tabs[0].id;
       }
     }
 
@@ -309,287 +264,176 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
 
+    /* ========== TID/DATUM ========== */
+
     function currentTimeString() {
       const d = new Date();
-      const h = String(d.getHours()).padStart(2, '0');
-      const m = String(d.getMinutes()).padStart(2, '0');
-      return h + ':' + m + ' ';
+      return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")} `;
     }
 
     function currentDateHeading() {
       const d = new Date();
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return '=== ' + y + '-' + m + '-' + day + ' ===';
+      return `=== ${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")} ===`;
     }
 
-    function getActiveTab() {
-      return state.tabs.find(t => t.id === state.activeId);
+    function getActiveTab() { 
+      return state.tabs.find(t => t.id === state.activeId); 
     }
 
-    function renderTabs(tabsContainer, ta) {
-      tabsContainer.innerHTML = '';
+    /* ========== FLIKAR ========== */
+
+    function renderTabs(container, ta) {
+      container.innerHTML = "";
       state.tabs.forEach(tab => {
-        const btn = document.createElement('button');
-        btn.className = 'tab' + (tab.id === state.activeId ? ' active' : '');
-        btn.textContent = tab.name;
-        btn.type = 'button';
-        btn.addEventListener('click', () => {
-          switchTab(tab.id, tabsContainer, ta);
-        });
-        tabsContainer.appendChild(btn);
+        const b = document.createElement("button");
+        b.className = "tab" + (tab.id === state.activeId ? " active" : "");
+        b.textContent = tab.name;
+        b.onclick = () => switchTab(tab.id, container, ta);
+        container.appendChild(b);
       });
     }
 
-    function switchTab(id, tabsContainer, ta) {
+    function switchTab(id, container, ta) {
       const current = getActiveTab();
-      if (current) {
-        current.content = ta.value;
-      }
-
+      if (current) current.content = ta.value;
       state.activeId = id;
       saveState();
-
-      const newTab = getActiveTab();
-      ta.value = newTab.content || '';
-
+      const next = getActiveTab();
+      ta.value = next.content || "";
       ensureFirstLineHasDateAndTime(ta);
-      renderTabs(tabsContainer, ta);
+      renderTabs(container, ta);
     }
 
-    function addTab(tabsContainer, ta) {
-      const name = prompt('Namn på ny flik (t.ex. elevens namn):', '');
+    function addTab(container, ta) {
+      const name = prompt("Namn på ny elev:");
       if (!name) return;
-
-      const id = String(Date.now()) + '_' + Math.random().toString(16).slice(2);
-      const newTab = { id, name: name.trim(), content: '' };
-
-      const current = getActiveTab();
-      if (current) {
-        current.content = ta.value;
-      }
-
-      state.tabs.push(newTab);
+      const id = Date.now() + "_" + Math.random().toString(16).slice(2);
+      state.tabs.push({ id, name, content: "" });
       state.activeId = id;
       saveState();
-
-      renderTabs(tabsContainer, ta);
-      ta.value = '';
+      renderTabs(container, ta);
+      ta.value = "";
       ensureFirstLineHasDateAndTime(ta);
     }
 
-    function renameTab(tabsContainer) {
-      const tab = getActiveTab();
-      if (!tab) return;
-      const newName = prompt('Nytt namn för fliken:', tab.name);
-      if (!newName) return;
-      tab.name = newName.trim();
+    function renameTab(container) {
+      const t = getActiveTab();
+      if (!t) return;
+      const n = prompt("Nytt namn:", t.name);
+      if (!n) return;
+      t.name = n.trim();
       saveState();
-      renderTabs(tabsContainer);
+      renderTabs(container);
     }
 
-    function deleteTab(tabsContainer, ta) {
-      if (state.tabs.length <= 1) {
-        alert('Du måste ha minst en flik.');
-        return;
-      }
-      const tab = getActiveTab();
-      if (!tab) return;
-      if (!confirm(`Ta bort fliken "${tab.name}"?`)) return;
-
-      state.tabs = state.tabs.filter(t => t.id !== tab.id);
+    function deleteTab(container, ta) {
+      if (state.tabs.length <= 1) return alert("Minst en flik krävs.");
+      const t = getActiveTab();
+      if (!confirm("Ta bort fliken: " + t.name + "?")) return;
+      state.tabs = state.tabs.filter(x => x.id !== t.id);
       state.activeId = state.tabs[0].id;
       saveState();
-      renderTabs(tabsContainer, ta);
-      const newTab = getActiveTab();
-      ta.value = newTab.content || '';
-      ensureFirstLineHasDateAndTime(ta);
+      renderTabs(container, ta);
+      ta.value = getActiveTab().content;
     }
+
+    /* ========== TEXT & SNABBKNAPPAR ========== */
 
     function ensureFirstLineHasDateAndTime(ta) {
       if (!ta.value.trim()) {
-        const dateLine = currentDateHeading();
-        ta.value = dateLine + '\n' + currentTimeString();
-        const pos = ta.value.length;
-        ta.setSelectionRange(pos, pos);
+        ta.value = currentDateHeading() + "\n" + currentTimeString();
       }
     }
 
     function insertDateHeadingAtCursor(ta) {
-      const heading = currentDateHeading();
       const start = ta.selectionStart;
-      const end = ta.selectionEnd;
-      const value = ta.value;
-
-      const before = value.slice(0, start);
-      const after = value.slice(end);
-
-      const needsLeadingNewline = start > 0 && !before.endsWith('\n');
-      const insertText =
-        (needsLeadingNewline ? '\n' : '') +
-        heading +
-        '\n' +
-        currentTimeString();
-
-      ta.value = before + insertText + after;
-      const newPos = before.length + insertText.length;
-      ta.setSelectionRange(newPos, newPos);
-
-      const tab = getActiveTab();
-      if (tab) {
-        tab.content = ta.value;
-        saveState();
-      }
+      const before = ta.value.slice(0, start);
+      const after = ta.value.slice(start);
+      ta.value = before + "\n" + currentDateHeading() + "\n" + currentTimeString() + after;
     }
 
     function exportCurrentTab(ta) {
       const tab = getActiveTab();
-      if (!tab) return;
-
       const text = ta.value;
-      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
       const url = URL.createObjectURL(blob);
-
-      const d = new Date();
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-
-      let safeName = tab.name.replace(/[^a-z0-9_\-]+/gi, '_');
-      if (!safeName) safeName = 'anteckning';
-
-      const filename = `${safeName}_${y}-${m}-${day}.txt`;
-
-      const a = document.createElement('a');
+      const filename = tab.name.replace(/\W+/g,"_") + ".txt";
+      const a = document.createElement("a");
       a.href = url;
       a.download = filename;
-      document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }
 
-    // Snabbknapp: ny rad + tid + label
     function insertQuickEntry(label, ta) {
       const start = ta.selectionStart;
-      const end = ta.selectionEnd;
-      const value = ta.value;
-
-      const before = value.slice(0, start);
-      const after = value.slice(end);
-
-      const insertText = '\n' + currentTimeString() + label;
-
-      ta.value = before + insertText + after;
-
-      const newPos = before.length + insertText.length;
-      ta.setSelectionRange(newPos, newPos);
-
-      const tab = getActiveTab();
-      if (tab) {
-        tab.content = ta.value;
-        saveState();
-      }
+      const before = ta.value.slice(0, start);
+      const after = ta.value.slice(start);
+      ta.value = before + "\n" + currentTimeString() + label + after;
+      ta.selectionStart = ta.selectionEnd = before.length + label.length + 7;
+      getActiveTab().content = ta.value;
+      saveState();
     }
 
-    // ====== Tema (mörkt / ljust) ======
+    /* ========== TEMA (SOL/MÅNE) ========== */
+
     function loadTheme() {
-      const saved = localStorage.getItem(THEME_KEY);
-      if (saved === 'dark' || saved === 'light') return saved;
-      return 'light';
+      return localStorage.getItem(THEME_KEY) || "light";
     }
 
-    function saveTheme(mode) {
-      localStorage.setItem(THEME_KEY, mode);
+    function saveTheme(t) {
+      localStorage.setItem(THEME_KEY, t);
     }
 
-    function applyTheme(mode) {
-  const isDark = mode === 'dark';
-  document.body.classList.toggle('dark', isDark);
-  const btn = document.getElementById('themeToggleBtn');
-  if (btn) {
-    // Sol = ljust läge, Måne = mörkt läge
-    btn.textContent = isDark ? '🌙' : '🌞';
-  }
-}
+    function applyTheme(t) {
+      const dark = t === "dark";
+      document.body.classList.toggle("dark", dark);
+      document.getElementById("themeToggleBtn").textContent = dark ? "🌙" : "🌞";
+    }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      const ta = document.getElementById('notes');
-      const tabsContainer = document.getElementById('tabs');
-      const addTabBtn = document.getElementById('addTabBtn');
-      const renameTabBtn = document.getElementById('renameTabBtn');
-      const deleteTabBtn = document.getElementById('deleteTabBtn');
-      const insertDateBtn = document.getElementById('insertDateBtn');
-      const exportBtn = document.getElementById('exportBtn');
-      const quickButtons = document.querySelectorAll('.quick-btn');
-      const themeToggleBtn = document.getElementById('themeToggleBtn');
+    /* ========== INIT ========== */
 
-      // Tema först
-      let currentTheme = loadTheme();
-      applyTheme(currentTheme);
+    window.onload = () => {
+      const ta = document.getElementById("notes");
+      const tabs = document.getElementById("tabs");
 
       loadState();
-      renderTabs(tabsContainer, ta);
-      const tab = getActiveTab();
-      ta.value = (tab && tab.content) || '';
+      renderTabs(tabs, ta);
+      ta.value = getActiveTab().content;
       ensureFirstLineHasDateAndTime(ta);
 
-      addTabBtn.addEventListener('click', () => addTab(tabsContainer, ta));
-      renameTabBtn.addEventListener('click', () => renameTab(tabsContainer));
-      deleteTabBtn.addEventListener('click', () => deleteTab(tabsContainer, ta));
-      insertDateBtn.addEventListener('click', () => insertDateHeadingAtCursor(ta));
-      exportBtn.addEventListener('click', () => exportCurrentTab(ta));
+      document.getElementById("addTabBtn").onclick = () => addTab(tabs, ta);
+      document.getElementById("renameTabBtn").onclick = () => renameTab(tabs);
+      document.getElementById("deleteTabBtn").onclick = () => deleteTab(tabs, ta);
+      document.getElementById("insertDateBtn").onclick = () => insertDateHeadingAtCursor(ta);
+      document.getElementById("exportBtn").onclick = () => exportCurrentTab(ta);
 
-      quickButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const label = btn.getAttribute('data-label');
-          insertQuickEntry(label, ta);
-        });
+      document.querySelectorAll(".quick-btn").forEach(btn => {
+        btn.onclick = () => insertQuickEntry(btn.dataset.label, ta);
       });
 
-      // Växla tema
-      themeToggleBtn.addEventListener('click', () => {
-        currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        applyTheme(currentTheme);
-        saveTheme(currentTheme);
-      });
-
-      // Enter → ny rad + tid
-      ta.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
+      // ENTER = ny tidsrad
+      ta.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
           e.preventDefault();
-
-          const start = ta.selectionStart;
-          const end = ta.selectionEnd;
-          const value = ta.value;
-
-          const before = value.slice(0, start);
-          const after = value.slice(end);
-
-          const insertText = '\n' + currentTimeString();
-
-          ta.value = before + insertText + after;
-
-          const newPos = before.length + insertText.length;
-          ta.setSelectionRange(newPos, newPos);
-
-          const tab = getActiveTab();
-          if (tab) {
-            tab.content = ta.value;
-            saveState();
-          }
+          const pos = ta.selectionStart;
+          const before = ta.value.slice(0, pos);
+          const after = ta.value.slice(pos);
+          ta.value = before + "\n" + currentTimeString() + after;
+          ta.selectionStart = ta.selectionEnd = before.length + 6;
         }
       });
 
-      ta.addEventListener('input', () => {
-        const tab = getActiveTab();
-        if (tab) {
-          tab.content = ta.value;
-          saveState();
-        }
-      });
-    });
+      // TEMA
+      let theme = loadTheme();
+      applyTheme(theme);
+
+      document.getElementById("themeToggleBtn").onclick = () => {
+        theme = theme === "dark" ? "light" : "dark";
+        applyTheme(theme);
+        saveTheme(theme);
+      };
+    };
   </script>
 </body>
 </html>
