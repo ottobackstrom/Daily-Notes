@@ -1,9 +1,25 @@
 <!DOCTYPE html>
 <html lang="sv">
+<!DOCTYPE html>
+<html lang="sv">
 <head>
   <meta charset="utf-8" />
   <title>Tidsanteckningar – elever</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Gör att sidan kan köras som "app" från hemskärmen på iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Tidsanteckningar" />
+
+  <!-- Färg på bakgrund/adressrad (Android m.fl.) -->
+  <meta name="theme-color" content="#f5f5f5" />
+
+  <!-- Ikon för hemskärmen (skapa en kvadratisk PNG, t.ex. 192x192 px) -->
+  <link rel="apple-touch-icon" href="icon-192.png" />
+
+  <!-- Manifest för PWA (exempel längre ner) -->
+  <link rel="manifest" href="manifest.webmanifest" />
 
   <style>
     * {
@@ -33,7 +49,6 @@
       margin-bottom: 0.75rem;
     }
 
-    /* Flikar */
     .tabs-container {
       display: flex;
       gap: 0.25rem;
