@@ -36,27 +36,27 @@
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
       background: var(--ios-bg);
       color: var(--ios-label);
+      width: 100%;
+      overflow-x: hidden;
     }
 
     .app {
-    width: 100%;
-    max-width: none;
-    margin: 0;
-  /*  padding: 0 1rem; /* behåller liten sidmarginal i innehållet */
-    padding-top: 100px;   /* plats för headern */
-    padding-bottom: 170px; /* plats för bottenpanelen */
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background: var(--ios-bg);
-}
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--ios-bg);
+    }
 
     /* ======= TOPP-NAV BAR ======= */
 
     .nav-bar {
-      position: fixed;
+      position: sticky;
       top: 0;
       z-index: 10;
+      width: 100%;
       background: rgba(242, 242, 247, 0.95);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
@@ -88,7 +88,7 @@
       color: var(--ios-secondary);
     }
 
-    /* ======= FLIKAR (segmented control) ======= */
+    /* ======= FLIKAR ======= */
 
     .tabs-shell {
       display: flex;
@@ -170,7 +170,6 @@
       border-radius: 12px;
       padding: 0.75rem 0.75rem;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-      line-height: 1.5; /* valfritt men gör det lite luftigare */
       font-size: 15px;
       line-height: 1.4;
       background: var(--ios-surface);
@@ -187,14 +186,15 @@
     /* ======= NEDRE VERKTYGSPANEL ======= */
 
     .bottom-toolbar {
-      position: fixed;
+      position: sticky;
       bottom: 0;
       z-index: 5;
+      width: 100%;
       background: rgba(242, 242, 247, 0.97);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-top: 0.5px solid var(--ios-separator);
-      padding: 0.45rem 0.75rem 1.50rem;
+      padding: 0.45rem 0.75rem 1.5rem; /* extra luft under knapparna */
       display: flex;
       flex-direction: column;
       gap: 0.45rem;
@@ -220,6 +220,12 @@
       align-items: center;
     }
 
+    .bottom-label {
+      font-size: 11px;
+      color: var(--ios-secondary);
+      margin-top: 0.15rem;
+    }
+
     /* App-kontrollknappar */
     .control-btn {
       display: inline-flex;
@@ -229,7 +235,7 @@
       border: 0.5px solid rgba(60,60,67,0.25);
       background: var(--ios-surface);
       font-size: 12px;
-      padding: 0.25rem 0.6rem;
+      padding: 0.35rem 0.8rem;
       color: #3c3c43;
     }
 
@@ -242,10 +248,6 @@
       border-color: rgba(255,59,48,0.35);
     }
 
-    .control-btn:active {
-      background: #e5e5ea;
-    }
-
     .control-btn.primary {
       color: var(--ios-accent);
       border-color: rgba(0,122,255,0.45);
@@ -255,7 +257,7 @@
     .chip-btn {
       border-radius: var(--radius-pill);
       border: 0.5px solid rgba(60,60,67,0.2);
-      padding: 0.25rem 0.7rem;
+      padding: 0.3rem 0.85rem;
       background: var(--ios-surface);
       font-size: 12px;
       color: #3c3c43;
@@ -275,92 +277,81 @@
       background: #e5e5ea;
     }
 
-    .bottom-label {
-      font-size: 11px;
-      color: var(--ios-secondary);
-      margin-top: 0.15rem;
+    /* ======= DARK MODE ======= */
+
+    body.dark {
+      background: #000000;
     }
 
-    /* ======= DARK MODE (enkel) ======= */
+    body.dark .app {
+      background: #000000;
+    }
 
-body.dark {
-  background: #000000;
-}
+    body.dark .nav-bar,
+    body.dark .bottom-toolbar {
+      background: rgba(22, 22, 24, 0.94);
+      border-color: rgba(84, 84, 88, 0.65);
+    }
 
-body.dark .app {
-  background: #000000;
-}
+    body.dark .nav-title,
+    body.dark .bottom-section-title,
+    body.dark .hint,
+    body.dark .bottom-label {
+      color: rgba(235, 235, 245, 0.9);
+    }
 
-body.dark .nav-bar,
-body.dark .bottom-toolbar {
-  background: rgba(22, 22, 24, 0.94);
-  border-color: rgba(84, 84, 88, 0.65);
-}
+    body.dark .nav-subtitle {
+      color: rgba(235, 235, 245, 0.75);
+    }
 
-/* Huvudtexter i dark mode – ljusare */
-body.dark .nav-title,
-body.dark .bottom-section-title,
-body.dark .hint,
-body.dark .bottom-label {
-  color: rgba(235, 235, 245, 0.9);
-}
+    body.dark .content {
+      background: #000000;
+    }
 
-body.dark .nav-subtitle {
-  color: rgba(235, 235, 245, 0.75);
-}
+    body.dark textarea {
+      background: #1c1c1e;
+      color: #ffffff;
+      box-shadow: 0 0 0 0.5px rgba(84,84,88,0.6);
+    }
 
-body.dark .content {
-  background: #000000;
-}
+    body.dark .tab {
+      background: #3a3a3c;
+      color: #f2f2f7;
+    }
 
-body.dark textarea {
-  background: #1c1c1e;
-  color: #ffffff;
-  box-shadow: 0 0 0 0.5px rgba(84,84,88,0.6);
-}
+    body.dark .tab.active {
+      background: #1c1c1e;
+      color: #0a84ff;
+      border-color: rgba(84,84,88,0.6);
+    }
 
-body.dark .tab {
-  background: #3a3a3c;
-  color: #f2f2f7;
-}
+    body.dark .tab-add {
+      background: #3a3a3c;
+      color: #f2f2f7;
+    }
 
-body.dark .tab.active {
-  background: #1c1c1e;
-  color: #0a84ff;
-  border-color: rgba(84,84,88,0.6);
-}
+    body.dark .control-btn {
+      background: #1c1c1e;
+      color: #f2f2f7;
+      border-color: rgba(84,84,88,0.6);
+    }
 
-body.dark .tab-add {
-  background: #3a3a3c;
-  color: #f2f2f7;
-}
+    body.dark .chip-btn {
+      background: #1c1c1e;
+      border-color: rgba(84,84,88,0.6);
+    }
 
-/* App-kontroller i dark mode */
-body.dark .control-btn {
-  background: #1c1c1e;
-  color: #f2f2f7;
-  border-color: rgba(84,84,88,0.6);
-}
+    body.dark .chip-btn.destructive {
+      color: #ff453a;
+      border-color: rgba(255,69,58,0.8);
+      background: rgba(255,69,58,0.16);
+    }
 
-/* Grundstil för chippar i dark mode */
-body.dark .chip-btn {
-  background: #1c1c1e;
-  border-color: rgba(84,84,88,0.6);
-}
-
-/* Beteende – röd (destruktiv) */
-body.dark .chip-btn.destructive {
-  color: #ff453a; /* iOS röd */
-  border-color: rgba(255,69,58,0.8);
-  background: rgba(255,69,58,0.16);
-}
-
-/* Beteende – grön (positiv) */
-body.dark .chip-btn.success {
-  color: #30d158; /* iOS grön */
-  border-color: rgba(48,209,88,0.8);
-  background: rgba(48,209,88,0.16);
-}
+    body.dark .chip-btn.success {
+      color: #30d158;
+      border-color: rgba(48,209,88,0.8);
+      background: rgba(48,209,88,0.16);
+    }
 
   </style>
 </head>
@@ -392,10 +383,10 @@ body.dark .chip-btn.success {
       <textarea id="notes" placeholder="Ny logg..."></textarea>
     </main>
 
-    
     <!-- NEDRE VERKTYGSPANEL -->
     <footer class="bottom-toolbar">
       <div class="bottom-label" id="infoLabel">Automatisk tidsstämpel aktiv</div>
+
       <!-- App-kontroller -->
       <div class="bottom-section">
         <div class="bottom-section-title">App-kontroller</div>
@@ -431,7 +422,6 @@ body.dark .chip-btn.success {
           <button class="chip-btn success quick-btn" type="button" data-label="Ber om ursäkt">Ber om ursäkt</button>
           <button class="chip-btn success quick-btn" type="button" data-label="Räcker upp handen">Räcker upp handen</button>
         </div>
-        
       </div>
     </footer>
   </div>
@@ -465,26 +455,22 @@ body.dark .chip-btn.success {
     }
 
     function currentDateHeading() {
-  const d = new Date();
-
-  const veckodagar = [
-    "Söndag", "Måndag", "Tisdag", "Onsdag",
-    "Torsdag", "Fredag", "Lördag"
-  ];
-  const månader = [
-    "januari", "februari", "mars", "april",
-    "maj", "juni", "juli", "augusti",
-    "september", "oktober", "november", "december"
-  ];
-
-  const dag = veckodagar[d.getDay()];
-  const datum = d.getDate();
-  const månad = månader[d.getMonth()];
-  const år = d.getFullYear();
-
-  return `${dag} ${datum} ${månad} ${år}`;
-}
-
+      const d = new Date();
+      const veckodagar = [
+        "Söndag", "Måndag", "Tisdag", "Onsdag",
+        "Torsdag", "Fredag", "Lördag"
+      ];
+      const månader = [
+        "januari", "februari", "mars", "april",
+        "maj", "juni", "juli", "augusti",
+        "september", "oktober", "november", "december"
+      ];
+      const dag = veckodagar[d.getDay()];
+      const datum = d.getDate();
+      const månad = månader[d.getMonth()];
+      const år = d.getFullYear();
+      return `${dag} ${datum} ${månad} ${år}`;
+    }
 
     function getActiveTab() {
       return state.tabs.find(t => t.id === state.activeId);
@@ -578,16 +564,13 @@ body.dark .chip-btn.success {
     function exportCurrentTab(ta) {
       const tab = getActiveTab();
       if (!tab) return;
-
       const elevNamn = tab.name || "Okänd elev";
       const header = `Elev: ${elevNamn}\n\n`;
       const body = ta.value || "";
       const text = header + body;
-
       const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const filename = (elevNamn || "anteckning").replace(/\W+/g, "_") + ".txt";
-
       const a = document.createElement("a");
       a.href = url;
       a.download = filename;
