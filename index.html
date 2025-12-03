@@ -331,12 +331,33 @@ body.dark .tab-add {
   color: #f2f2f7;
 }
 
-body.dark .control-btn,
-body.dark .chip-btn {
+/* App-kontroller i dark mode */
+body.dark .control-btn {
   background: #1c1c1e;
   color: #f2f2f7;
   border-color: rgba(84,84,88,0.6);
 }
+
+/* Grundstil för chippar i dark mode */
+body.dark .chip-btn {
+  background: #1c1c1e;
+  border-color: rgba(84,84,88,0.6);
+}
+
+/* Beteende – röd (destruktiv) */
+body.dark .chip-btn.destructive {
+  color: #ff453a; /* iOS röd */
+  border-color: rgba(255,69,58,0.8);
+  background: rgba(255,69,58,0.16);
+}
+
+/* Beteende – grön (positiv) */
+body.dark .chip-btn.success {
+  color: #30d158; /* iOS grön */
+  border-color: rgba(48,209,88,0.8);
+  background: rgba(48,209,88,0.16);
+}
+
   </style>
 </head>
 
