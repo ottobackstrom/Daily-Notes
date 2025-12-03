@@ -36,55 +36,61 @@
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
       background: var(--ios-bg);
       color: var(--ios-label);
-      width: 100%;
-      overflow-x: hidden;
     }
-
-    /* ====== FULLBREDD APP ====== */
 
     .app {
-      width: 100%;
-      margin: 0;
-      padding: 0 1rem;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background: var(--ios-bg);
-    }
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0 1rem; /* behåller liten sidmarginal i innehållet */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--ios-bg);
+}
 
     /* ======= TOPP-NAV BAR ======= */
 
     .nav-bar {
       position: sticky;
       top: 0;
-      width: 100%;
       z-index: 10;
-      background: rgba(242,242,247,0.97);
+      background: rgba(242, 242, 247, 0.95);
       backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-bottom: 0.5px solid var(--ios-separator);
-      padding: 0.6rem 1rem 0.55rem;
+      padding: 0.5rem 0.75rem 0.45rem;
       display: flex;
       flex-direction: column;
-      gap: 0.35rem;
+      gap: 0.4rem;
+    }
+
+    .nav-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .nav-title-container {
+      text-align: center;
     }
 
     .nav-title {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 600;
-      text-align: center;
+      line-height: 1.2;
     }
 
     .nav-subtitle {
-      font-size: 12px;
-      text-align: center;
+      font-size: 11px;
       color: var(--ios-secondary);
     }
 
-    /* ======= FLIKAR ======= */
+    /* ======= FLIKAR (segmented control) ======= */
 
     .tabs-shell {
-      width: 100%;
       display: flex;
+      align-items: center;
       gap: 0.5rem;
     }
 
@@ -92,7 +98,8 @@
       flex: 1;
       display: flex;
       overflow-x: auto;
-      gap: 0.35rem;
+      gap: 0.25rem;
+      padding-bottom: 0.1rem;
       scrollbar-width: none;
     }
 
@@ -105,10 +112,10 @@
       border: 0.5px solid transparent;
       background: #e5e5ea;
       color: #3c3c43;
-      font-size: 14px;
-      padding: 0.3rem 0.75rem;
-      flex: 0 0 auto;
+      font-size: 13px;
+      padding: 0.25rem 0.7rem;
       white-space: nowrap;
+      flex: 0 0 auto;
     }
 
     .tab.active {
@@ -116,126 +123,198 @@
       border-color: var(--ios-separator);
       color: var(--ios-accent);
       font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.10);
     }
 
     .tab-add {
+      flex: 0 0 auto;
       border-radius: 999px;
+      border: none;
       background: #e5e5ea;
-      width: 32px;
-      height: 32px;
-      font-size: 20px;
+      width: 28px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 18px;
+    }
+
+    .tab:active,
+    .tab-add:active {
+      opacity: 0.8;
     }
 
     /* ======= INNEHÅLL ======= */
 
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0.5rem 0.75rem 0.75rem;
+      gap: 0.45rem;
+    }
+
     .hint {
       font-size: 12px;
       color: var(--ios-secondary);
-      margin-top: 0.6rem;
+      padding: 0 0.25rem;
     }
 
     textarea {
+      margin-top: 0.25rem;
+      flex: 1;
       width: 100%;
-      margin-top: 0.5rem;
       border: none;
       border-radius: 12px;
-      padding: 0.9rem;
-      font-size: 16px;
-      line-height: 1.5;
+      padding: 0.75rem 0.75rem;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+      line-height: 1.5; /* valfritt men gör det lite luftigare */
+      font-size: 15px;
+      line-height: 1.4;
       background: var(--ios-surface);
-      box-shadow: 0 0 0 0.5px rgba(60,60,67,0.2);
+      color: var(--ios-label);
       resize: none;
-      min-height: 55vh;
+      outline: none;
+      box-shadow: 0 0 0 0.5px rgba(60,60,67,0.15);
     }
 
-    /* ======= NEDRE VERKTYGFÄLT ======= */
+    textarea:focus {
+      box-shadow: 0 0 0 1px rgba(0,122,255,0.5);
+    }
+
+    /* ======= NEDRE VERKTYGSPANEL ======= */
 
     .bottom-toolbar {
-      width: 100%;
       position: sticky;
       bottom: 0;
-      background: rgba(242,242,247,0.97);
+      z-index: 5;
+      background: rgba(242, 242, 247, 0.97);
       backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-top: 0.5px solid var(--ios-separator);
-      padding: 0.8rem 1rem 1rem;
+      padding: 0.45rem 0.75rem 0.55rem;
       display: flex;
       flex-direction: column;
-      gap: 0.8rem;
+      gap: 0.45rem;
+    }
+
+    .bottom-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
     }
 
     .bottom-section-title {
-      font-size: 12px;
+      font-size: 11px;
       text-transform: uppercase;
+      letter-spacing: 0.08em;
       color: var(--ios-secondary);
     }
 
     .bottom-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 0.35rem;
+      align-items: center;
     }
 
-    /* ======= STÖRRE KNAPPAR ======= */
-
+    /* App-kontrollknappar */
     .control-btn {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.25rem;
       border-radius: var(--radius-pill);
       border: 0.5px solid rgba(60,60,67,0.25);
       background: var(--ios-surface);
-      font-size: 14px;
-      padding: 0.45rem 1rem;
-      min-height: 38px;
+      font-size: 12px;
+      padding: 0.25rem 0.6rem;
+      color: #3c3c43;
     }
 
-    .control-btn.primary { color: var(--ios-accent); }
-    .control-btn.destructive { color: var(--ios-destructive); }
+    .control-btn .icon {
+      font-size: 13px;
+    }
 
+    .control-btn.destructive {
+      color: var(--ios-destructive);
+      border-color: rgba(255,59,48,0.35);
+    }
+
+    .control-btn:active {
+      background: #e5e5ea;
+    }
+
+    .control-btn.primary {
+      color: var(--ios-accent);
+      border-color: rgba(0,122,255,0.45);
+    }
+
+    /* Snabbknappar för beteende */
     .chip-btn {
       border-radius: var(--radius-pill);
       border: 0.5px solid rgba(60,60,67,0.2);
-      padding: 0.4rem 1rem;
-      font-size: 13px;
-      min-height: 36px;
+      padding: 0.25rem 0.7rem;
       background: var(--ios-surface);
+      font-size: 12px;
+      color: #3c3c43;
     }
 
-    .chip-btn.destructive { color: var(--ios-destructive); }
-    .chip-btn.success { color: var(--ios-success); }
+    .chip-btn.destructive {
+      color: var(--ios-destructive);
+      border-color: rgba(255,59,48,0.3);
+    }
+
+    .chip-btn.success {
+      color: var(--ios-success);
+      border-color: rgba(52,199,89,0.3);
+    }
+
+    .chip-btn:active {
+      background: #e5e5ea;
+    }
 
     .bottom-label {
       font-size: 11px;
       color: var(--ios-secondary);
+      margin-top: 0.15rem;
     }
 
-    /* ======= DARK MODE ======= */
+    /* ======= DARK MODE (enkel) ======= */
 
 body.dark {
-  background: #000;
+  background: #000000;
 }
 
-body.dark textarea {
-  background: #1c1c1e;
-  color: white;
-  box-shadow: 0 0 0 0.5px rgba(80,80,85,0.6);
+body.dark .app {
+  background: #000000;
 }
 
 body.dark .nav-bar,
 body.dark .bottom-toolbar {
-  background: rgba(22,22,24,0.94);
-  border-color: rgba(84,84,88,0.6);
+  background: rgba(22, 22, 24, 0.94);
+  border-color: rgba(84, 84, 88, 0.65);
 }
 
+/* Huvudtexter i dark mode – ljusare */
 body.dark .nav-title,
-body.dark .nav-subtitle,
-body.dark .hint,
 body.dark .bottom-section-title,
+body.dark .hint,
 body.dark .bottom-label {
-  color: rgba(240,240,245,0.9);
+  color: rgba(235, 235, 245, 0.9);
+}
+
+body.dark .nav-subtitle {
+  color: rgba(235, 235, 245, 0.75);
+}
+
+body.dark .content {
+  background: #000000;
+}
+
+body.dark textarea {
+  background: #1c1c1e;
+  color: #ffffff;
+  box-shadow: 0 0 0 0.5px rgba(84,84,88,0.6);
 }
 
 body.dark .tab {
@@ -246,80 +325,107 @@ body.dark .tab {
 body.dark .tab.active {
   background: #1c1c1e;
   color: #0a84ff;
+  border-color: rgba(84,84,88,0.6);
 }
 
-/* Behåll app-knappar neutrala i dark mode */
-body.dark .control-btn {
-  background: #1c1c1e;
-  border-color: rgba(84,84,88,0.6);
+body.dark .tab-add {
+  background: #3a3a3c;
   color: #f2f2f7;
 }
 
-/* Beteendeknappar – tydliga i dark mode */
+/* App-kontroller i dark mode */
+body.dark .control-btn {
+  background: #1c1c1e;
+  color: #f2f2f7;
+  border-color: rgba(84,84,88,0.6);
+}
+
+/* Grundstil för chippar i dark mode */
 body.dark .chip-btn {
   background: #1c1c1e;
   border-color: rgba(84,84,88,0.6);
 }
 
+/* Beteende – röd (destruktiv) */
 body.dark .chip-btn.destructive {
-  color: #ff453a;
+  color: #ff453a; /* iOS röd */
+  border-color: rgba(255,69,58,0.8);
   background: rgba(255,69,58,0.16);
-  border-color: rgba(255,69,58,0.7);
 }
 
+/* Beteende – grön (positiv) */
 body.dark .chip-btn.success {
-  color: #30d158;
+  color: #30d158; /* iOS grön */
+  border-color: rgba(48,209,88,0.8);
   background: rgba(48,209,88,0.16);
-  border-color: rgba(48,209,88,0.7);
 }
+
   </style>
 </head>
-
 
 <body>
   <div class="app">
 
-    <!-- TOPP -->
+    <!-- NAV BAR -->
     <header class="nav-bar">
-      <div class="nav-title">SGHL-Logg</div>
-      <div class="nav-subtitle" id="currentTabTitle">Elev 1</div>
+      <div class="nav-row">
+        <div class="nav-title-container">
+          <div class="nav-title">SGHL-Logg</div>
+          <div class="nav-subtitle" id="currentTabTitle">Elev 1</div>
+        </div>
+      </div>
 
+      <!-- Flikar -->
       <div class="tabs-shell">
         <div class="tabs-container" id="tabs"></div>
-        <button class="tab-add" id="addTabBtn">＋</button>
+        <button class="tab-add" id="addTabBtn" type="button">＋</button>
       </div>
     </header>
 
     <!-- INNEHÅLL -->
-    <p class="hint">Varje ny rad börjar automatiskt med aktuell tid (HH:MM).</p>
-    <textarea id="notes" placeholder="Ny logg..."></textarea>
+    <main class="content">
+      <p class="hint">
+        Varje ny rad börjar automatiskt med aktuell tid (HH:MM). Använd flikarna för olika elever.
+      </p>
+      <textarea id="notes" placeholder="Ny logg..."></textarea>
+    </main>
 
-    <!-- NEDRE PANEL -->
+    <!-- NEDRE VERKTYGSPANEL -->
     <footer class="bottom-toolbar">
-
-      <div>
+      <!-- App-kontroller -->
+      <div class="bottom-section">
         <div class="bottom-section-title">App-kontroller</div>
         <div class="bottom-row">
-          <button class="control-btn primary" id="renameTabBtn">✏️ Byt namn</button>
-          <button class="control-btn destructive" id="deleteTabBtn">🗑️ Ta bort flik</button>
-          <button class="control-btn" id="insertDateBtn">📅 Datum</button>
-          <button class="control-btn" id="exportBtn">⬇️ Export .txt</button>
-          <button class="control-btn" id="themeToggleBtn"><span id="themeIcon">☀️</span> Tema</button>
+          <button class="control-btn primary" id="renameTabBtn" type="button">
+            <span class="icon">✏️</span><span>Byt namn</span>
+          </button>
+          <button class="control-btn destructive" id="deleteTabBtn" type="button">
+            <span class="icon">🗑️</span><span>Ta bort flik</span>
+          </button>
+          <button class="control-btn" id="insertDateBtn" type="button">
+            <span class="icon">📅</span><span>Datum</span>
+          </button>
+          <button class="control-btn" id="exportBtn" type="button">
+            <span class="icon">⬇️</span><span>Export .txt</span>
+          </button>
+          <button class="control-btn" id="themeToggleBtn" type="button">
+            <span class="icon" id="themeIcon">☀️</span><span>Tema</span>
+          </button>
         </div>
       </div>
 
-      <div>
+      <!-- Beteende-snabbknappar -->
+      <div class="bottom-section">
         <div class="bottom-section-title">Snabbknappar – beteende</div>
         <div class="bottom-row">
-          <button class="chip-btn destructive quick-btn" data-label="Slåss">Slåss</button>
-          <button class="chip-btn destructive quick-btn" data-label="Använder fula ord">Fula ord</button>
-          <button class="chip-btn destructive quick-btn" data-label="Tjafsar emot">Tjafsar emot</button>
-          <button class="chip-btn destructive quick-btn" data-label="Uppe och går">Uppe och går</button>
-          <button class="chip-btn success quick-btn" data-label="Ber om ursäkt">Ber om ursäkt</button>
+          <button class="chip-btn destructive quick-btn" type="button" data-label="Slåss">Slåss</button>
+          <button class="chip-btn destructive quick-btn" type="button" data-label="Använder fula ord">Fula ord</button>
+          <button class="chip-btn destructive quick-btn" type="button" data-label="Tjafsar emot">Tjafsar emot</button>
+          <button class="chip-btn destructive quick-btn" type="button" data-label="Tjafsar emot">Uppe och går</button>
+          <button class="chip-btn success quick-btn" type="button" data-label="Ber om ursäkt">Ber om ursäkt</button>
         </div>
-        <div class="bottom-label">Automatisk tidsstämpel aktiv</div>
+        <div class="bottom-label" id="infoLabel">Automatisk tidsstämpel aktiv</div>
       </div>
-
     </footer>
   </div>
 
@@ -328,24 +434,12 @@ body.dark .chip-btn.success {
     const THEME_KEY = 'timeNotesApp_theme';
     let state = { tabs: [], activeId: null };
 
-    function currentDateHeading() {
-      const d = new Date();
-
-      const veckodagar = ["Söndag","Måndag","Tisdag","Onsdag","Torsdag","Fredag","Lördag"];
-      const månader = ["januari","februari","mars","april","maj","juni","juli","augusti",
-        "september","oktober","november","december"];
-
-      return `=== ${veckodagar[d.getDay()]} ${d.getDate()} ${månader[d.getMonth()]} ${d.getFullYear()} ===`;
-    }
-
-    function currentTimeString() {
-      const d = new Date();
-      return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")} `;
-    }
-
     function loadState() {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) { try { state = JSON.parse(raw); } catch {} }
+      if (raw) {
+        try { state = JSON.parse(raw); }
+        catch { state = { tabs: [], activeId: null }; }
+      }
       if (state.tabs.length === 0) {
         const id = String(Date.now());
         state.tabs = [{ id, name: "Elev 1", content: "" }];
@@ -358,12 +452,41 @@ body.dark .chip-btn.success {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
 
+    function currentTimeString() {
+      const d = new Date();
+      return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")} `;
+    }
+
+    function currentDateHeading() {
+  const d = new Date();
+
+  const veckodagar = [
+    "Söndag", "Måndag", "Tisdag", "Onsdag",
+    "Torsdag", "Fredag", "Lördag"
+  ];
+  const månader = [
+    "januari", "februari", "mars", "april",
+    "maj", "juni", "juli", "augusti",
+    "september", "oktober", "november", "december"
+  ];
+
+  const dag = veckodagar[d.getDay()];
+  const datum = d.getDate();
+  const månad = månader[d.getMonth()];
+  const år = d.getFullYear();
+
+  return `${dag} ${datum} ${månad} ${år}`;
+}
+
+
     function getActiveTab() {
       return state.tabs.find(t => t.id === state.activeId);
     }
 
     function updateNavSubtitle() {
-      document.getElementById("currentTabTitle").textContent = getActiveTab().name;
+      const t = getActiveTab();
+      const el = document.getElementById('currentTabTitle');
+      if (el && t) el.textContent = t.name;
     }
 
     function renderTabs(container, ta) {
@@ -372,6 +495,7 @@ body.dark .chip-btn.success {
         const b = document.createElement("button");
         b.className = "tab" + (tab.id === state.activeId ? " active" : "");
         b.textContent = tab.name;
+        b.type = "button";
         b.onclick = () => switchTab(tab.id, container, ta);
         container.appendChild(b);
       });
@@ -379,10 +503,12 @@ body.dark .chip-btn.success {
     }
 
     function switchTab(id, container, ta) {
-      getActiveTab().content = ta.value;
+      const current = getActiveTab();
+      if (current) current.content = ta.value;
       state.activeId = id;
       saveState();
-      ta.value = getActiveTab().content;
+      const next = getActiveTab();
+      ta.value = next.content || "";
       ensureFirstLineHasDateAndTime(ta);
       renderTabs(container, ta);
     }
@@ -390,12 +516,37 @@ body.dark .chip-btn.success {
     function addTab(container, ta) {
       const name = prompt("Namn på ny elev:");
       if (!name) return;
-      const id = Date.now() + "_" + Math.random();
+      const id = Date.now() + "_" + Math.random().toString(16).slice(2);
       state.tabs.push({ id, name: name.trim(), content: "" });
       state.activeId = id;
       saveState();
       renderTabs(container, ta);
       ta.value = "";
+      ensureFirstLineHasDateAndTime(ta);
+    }
+
+    function renameTab(container) {
+      const t = getActiveTab();
+      if (!t) return;
+      const n = prompt("Nytt namn på fliken:", t.name);
+      if (!n) return;
+      t.name = n.trim();
+      saveState();
+      renderTabs(container);
+    }
+
+    function deleteTab(container, ta) {
+      if (state.tabs.length <= 1) {
+        alert("Minst en flik krävs.");
+        return;
+      }
+      const t = getActiveTab();
+      if (!confirm("Ta bort fliken: " + t.name + "?")) return;
+      state.tabs = state.tabs.filter(x => x.id !== t.id);
+      state.activeId = state.tabs[0].id;
+      saveState();
+      renderTabs(container, ta);
+      ta.value = getActiveTab().content || "";
       ensureFirstLineHasDateAndTime(ta);
     }
 
@@ -406,100 +557,129 @@ body.dark .chip-btn.success {
     }
 
     function insertDateHeadingAtCursor(ta) {
-      const pos = ta.selectionStart;
+      const start = ta.selectionStart;
+      const before = ta.value.slice(0, start);
+      const after = ta.value.slice(start);
       const insert = "\n" + currentDateHeading() + "\n" + currentTimeString();
-      ta.value = ta.value.slice(0, pos) + insert + ta.value.slice(pos);
-      ta.selectionStart = ta.selectionEnd = pos + insert.length;
-      getActiveTab().content = ta.value;
-      saveState();
+      ta.value = before + insert + after;
+      const newPos = before.length + insert.length;
+      ta.selectionStart = ta.selectionEnd = newPos;
+      const t = getActiveTab();
+      if (t) { t.content = ta.value; saveState(); }
     }
 
     function exportCurrentTab(ta) {
       const tab = getActiveTab();
-      const header = `Elev: ${tab.name}\n\n`;
-      const blob = new Blob([header + ta.value], { type: "text/plain;charset=utf-8" });
+      if (!tab) return;
+
+      const elevNamn = tab.name || "Okänd elev";
+      const header = `Elev: ${elevNamn}\n\n`;
+      const body = ta.value || "";
+      const text = header + body;
+
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
       const url = URL.createObjectURL(blob);
+      const filename = (elevNamn || "anteckning").replace(/\W+/g, "_") + ".txt";
+
       const a = document.createElement("a");
       a.href = url;
-      a.download = tab.name.replace(/\W+/g, "_") + ".txt";
+      a.download = filename;
       a.click();
       URL.revokeObjectURL(url);
     }
 
     function insertQuickEntry(label, ta) {
-      const pos = ta.selectionStart;
+      const start = ta.selectionStart;
+      const before = ta.value.slice(0, start);
+      const after = ta.value.slice(start);
       const insert = "\n\n" + currentTimeString() + label;
-      ta.value = ta.value.slice(0, pos) + insert + ta.value.slice(pos);
-      ta.selectionStart = ta.selectionEnd = pos + insert.length;
-      getActiveTab().content = ta.value;
-      saveState();
+      ta.value = before + insert + after;
+      const newPos = before.length + insert.length;
+      ta.selectionStart = ta.selectionEnd = newPos;
+      const t = getActiveTab();
+      if (t) { t.content = ta.value; saveState(); }
     }
 
     function loadTheme() {
       return localStorage.getItem(THEME_KEY) || "light";
     }
 
-    function applyTheme(t) {
-      document.body.classList.toggle("dark", t === "dark");
-      document.getElementById("themeIcon").textContent = t === "dark" ? "🌙" : "☀️";
-    }
-
     function saveTheme(t) {
       localStorage.setItem(THEME_KEY, t);
     }
 
-    /* INIT */
+    function applyTheme(t) {
+      const dark = t === "dark";
+      document.body.classList.toggle("dark", dark);
+      const iconSpan = document.getElementById("themeIcon");
+      if (iconSpan) iconSpan.textContent = dark ? "🌙" : "☀️";
+    }
+
+    // Stoppa pinch-zoom
+    document.addEventListener('touchmove', function (event) {
+      if (event.touches.length > 1) {
+        event.preventDefault();
+      }
+    }, { passive: false });
+
+    // Stoppa dubbel-tap-zoom
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function (event) {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+
     window.onload = () => {
       const ta = document.getElementById("notes");
       const tabs = document.getElementById("tabs");
+      const addTabBtn = document.getElementById("addTabBtn");
+      const renameTabBtn = document.getElementById("renameTabBtn");
+      const deleteTabBtn = document.getElementById("deleteTabBtn");
+      const insertDateBtn = document.getElementById("insertDateBtn");
+      const exportBtn = document.getElementById("exportBtn");
+      const themeToggleBtn = document.getElementById("themeToggleBtn");
 
       loadState();
       renderTabs(tabs, ta);
-
-      ta.value = getActiveTab().content;
+      ta.value = getActiveTab().content || "";
       ensureFirstLineHasDateAndTime(ta);
 
-      document.getElementById("addTabBtn").onclick = () => addTab(tabs, ta);
-      document.getElementById("renameTabBtn").onclick = () => {
-        const t = getActiveTab();
-        const n = prompt("Nytt namn:", t.name);
-        if (!n) return;
-        t.name = n.trim();
-        saveState();
-        renderTabs(tabs, ta);
-      };
-      document.getElementById("deleteTabBtn").onclick = () => {
-        if (state.tabs.length <= 1) return alert("Minst en flik krävs.");
-        if (!confirm("Ta bort fliken?")) return;
-        const id = getActiveTab().id;
-        state.tabs = state.tabs.filter(x => x.id !== id);
-        state.activeId = state.tabs[0].id;
-        saveState();
-        renderTabs(tabs, ta);
-        ta.value = getActiveTab().content;
-      };
-      document.getElementById("insertDateBtn").onclick = () => insertDateHeadingAtCursor(ta);
-      document.getElementById("exportBtn").onclick = () => exportCurrentTab(ta);
+      addTabBtn.onclick = () => addTab(tabs, ta);
+      renameTabBtn.onclick = () => renameTab(tabs);
+      deleteTabBtn.onclick = () => deleteTab(tabs, ta);
+      insertDateBtn.onclick = () => insertDateHeadingAtCursor(ta);
+      exportBtn.onclick = () => exportCurrentTab(ta);
 
-      document.querySelectorAll(".quick-btn").forEach(btn =>
-        btn.onclick = () => insertQuickEntry(btn.dataset.label, ta)
-      );
+      document.querySelectorAll(".quick-btn").forEach(btn => {
+        btn.onclick = () => insertQuickEntry(btn.dataset.label, ta);
+      });
 
       ta.addEventListener("keydown", e => {
         if (e.key === "Enter") {
           e.preventDefault();
-          insertQuickEntry("", ta);
+          const pos = ta.selectionStart;
+          const before = ta.value.slice(0, pos);
+          const after = ta.value.slice(pos);
+          const insert = "\n\n" + currentTimeString();
+          ta.value = before + insert + after;
+          const newPos = before.length + insert.length;
+          ta.selectionStart = ta.selectionEnd = newPos;
+          const t = getActiveTab();
+          if (t) { t.content = ta.value; saveState(); }
         }
       });
 
       ta.addEventListener("input", () => {
-        getActiveTab().content = ta.value;
-        saveState();
+        const t = getActiveTab();
+        if (t) { t.content = ta.value; saveState(); }
       });
 
       let theme = loadTheme();
       applyTheme(theme);
-      document.getElementById("themeToggleBtn").onclick = () => {
+      themeToggleBtn.onclick = () => {
         theme = theme === "dark" ? "light" : "dark";
         applyTheme(theme);
         saveTheme(theme);
