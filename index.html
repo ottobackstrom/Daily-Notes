@@ -43,6 +43,8 @@
     max-width: none;
     margin: 0;
   /*  padding: 0 1rem; /* behåller liten sidmarginal i innehållet */
+    padding-top: 100px;   /* plats för headern */
+    padding-bottom: 170px; /* plats för bottenpanelen */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -52,7 +54,7 @@
     /* ======= TOPP-NAV BAR ======= */
 
     .nav-bar {
-      position: sticky;
+      position: fixed;
       top: 0;
       z-index: 10;
       background: rgba(242, 242, 247, 0.95);
@@ -185,7 +187,7 @@
     /* ======= NEDRE VERKTYGSPANEL ======= */
 
     .bottom-toolbar {
-      position: sticky;
+      position: fixed;
       bottom: 0;
       z-index: 5;
       background: rgba(242, 242, 247, 0.97);
