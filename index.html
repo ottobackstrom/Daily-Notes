@@ -458,9 +458,26 @@ body.dark .chip-btn.success {
     }
 
     function currentDateHeading() {
-      const d = new Date();
-      return `=== ${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")} ===`;
-    }
+  const d = new Date();
+
+  const veckodagar = [
+    "Söndag", "Måndag", "Tisdag", "Onsdag",
+    "Torsdag", "Fredag", "Lördag"
+  ];
+  const månader = [
+    "januari", "februari", "mars", "april",
+    "maj", "juni", "juli", "augusti",
+    "september", "oktober", "november", "december"
+  ];
+
+  const dag = veckodagar[d.getDay()];
+  const datum = d.getDate();
+  const månad = månader[d.getMonth()];
+  const år = d.getFullYear();
+
+  return ` ${dag} ${datum} ${månad} ${år} `;
+}
+
 
     function getActiveTab() {
       return state.tabs.find(t => t.id === state.activeId);
