@@ -165,7 +165,8 @@
       border: none;
       border-radius: 12px;
       padding: 0.75rem 0.75rem;
-      font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+      line-height: 1.5; /* valfritt men gör det lite luftigare */
       font-size: 15px;
       line-height: 1.4;
       background: var(--ios-surface);
@@ -550,7 +551,7 @@ body.dark .chip-btn {
       const start = ta.selectionStart;
       const before = ta.value.slice(0, start);
       const after = ta.value.slice(start);
-      const insert = "\n" + currentTimeString() + label;
+      const insert = "\n\n" + currentTimeString() + label;
       ta.value = before + insert + after;
       const newPos = before.length + insert.length;
       ta.selectionStart = ta.selectionEnd = newPos;
@@ -621,7 +622,7 @@ body.dark .chip-btn {
           const pos = ta.selectionStart;
           const before = ta.value.slice(0, pos);
           const after = ta.value.slice(pos);
-          const insert = "\n" + currentTimeString();
+          const insert = "\n\n" + currentTimeString();
           ta.value = before + insert + after;
           const newPos = before.length + insert.length;
           ta.selectionStart = ta.selectionEnd = newPos;
