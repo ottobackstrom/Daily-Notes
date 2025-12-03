@@ -278,57 +278,64 @@
 
     /* ======= DARK MODE (enkel) ======= */
 
-    body.dark {
-      background: #000000;
-    }
+body.dark {
+  background: #000000;
+}
 
-    body.dark .app {
-      background: #000000;
-    }
+body.dark .app {
+  background: #000000;
+}
 
-    body.dark .nav-bar,
-    body.dark .bottom-toolbar {
-      background: rgba(22, 22, 24, 0.94);
-      border-color: rgba(84, 84, 88, 0.65);
-    }
+body.dark .nav-bar,
+body.dark .bottom-toolbar {
+  background: rgba(22, 22, 24, 0.94);
+  border-color: rgba(84, 84, 88, 0.65);
+}
 
-    body.dark .content {
-      background: #000000;
-    }
+/* Huvudtexter i dark mode – ljusare */
+body.dark .nav-title,
+body.dark .bottom-section-title,
+body.dark .hint,
+body.dark .bottom-label {
+  color: rgba(235, 235, 245, 0.9);
+}
 
-    body.dark textarea {
-      background: #1c1c1e;
-      color: #ffffff;
-      box-shadow: 0 0 0 0.5px rgba(84,84,88,0.6);
-    }
+body.dark .nav-subtitle {
+  color: rgba(235, 235, 245, 0.75);
+}
 
-    body.dark .tab {
-      background: #3a3a3c;
-      color: #f2f2f7;
-    }
+body.dark .content {
+  background: #000000;
+}
 
-    body.dark .tab.active {
-      background: #1c1c1e;
-      color: #0a84ff;
-      border-color: rgba(84,84,88,0.6);
-    }
+body.dark textarea {
+  background: #1c1c1e;
+  color: #ffffff;
+  box-shadow: 0 0 0 0.5px rgba(84,84,88,0.6);
+}
 
-    body.dark .tab-add {
-      background: #3a3a3c;
-      color: #f2f2f7;
-    }
+body.dark .tab {
+  background: #3a3a3c;
+  color: #f2f2f7;
+}
 
-    body.dark .control-btn,
-    body.dark .chip-btn {
-      background: #1c1c1e;
-      color: #f2f2f7;
-      border-color: rgba(84,84,88,0.6);
-    }
+body.dark .tab.active {
+  background: #1c1c1e;
+  color: #0a84ff;
+  border-color: rgba(84,84,88,0.6);
+}
 
-    body.dark .bottom-label,
-    body.dark .nav-subtitle {
-      color: rgba(235,235,245,0.6);
-    }
+body.dark .tab-add {
+  background: #3a3a3c;
+  color: #f2f2f7;
+}
+
+body.dark .control-btn,
+body.dark .chip-btn {
+  background: #1c1c1e;
+  color: #f2f2f7;
+  border-color: rgba(84,84,88,0.6);
+}
   </style>
 </head>
 
