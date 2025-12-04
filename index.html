@@ -904,16 +904,19 @@ ${editor.innerHTML}
       printBtn.onclick = () => window.print();
 
       document.querySelectorAll(".quick-btn").forEach(btn => {
-        btn.onclick = () => insertQuickEntry(btn.dataset.label, editor);
-      });
+  // focus: false → ingen caret/fokus → tangentbordet poppar inte upp
+  btn.onclick = () => insertQuickEntry(btn.dataset.label, editor, { focus: false });
+});
 
-      // Enter → ny tidsrad längst ned (utan label)
+
       editor.addEventListener("keydown", e => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          insertQuickEntry("", editor);
-        }
-      });
+  if (e.key === "Enter") {
+    e.preventDefault();
+    // här vill vi ha caret längst ned och tangentbordet kvar = focus: true
+    insertQuickEntry("", editor, { focus: true });
+  }
+});
+
 
       editor.addEventListener("input", () => {
         const t = getActiveTab();
