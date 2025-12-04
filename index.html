@@ -159,6 +159,11 @@
       padding: 0 0.25rem;
     }
 
+    /* Visas bara vid utskrift */
+    .print-student-name {
+      display: none;
+    }
+
     /* Rich text-logg istället för textarea */
     #notes {
       margin-top: 0.25rem;
@@ -380,16 +385,26 @@
         background: #ffffff;
       }
 
-      /* Lägg till denna rad 👇 */
-      .hint { display: none !important; }
+      .hint {
+        display: none !important;
+      }
 
       .nav-bar,
       .bottom-toolbar {
-        display: none;
+        display: none !important;
       }
+
+      .print-student-name {
+        display: block !important;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
       .content {
         padding: 0;
       }
+
       #notes {
         box-shadow: none;
         border-radius: 0;
@@ -423,6 +438,8 @@
       <p class="hint">
         Varje ny rad börjar automatiskt med aktuell tid (HH:MM). Använd flikarna för olika elever.
       </p>
+      <!-- Namnrad som bara syns i utskrift -->
+      <div class="print-student-name" id="printName"></div>
       <!-- contenteditable istället för textarea -->
       <div id="notes" contenteditable="true"></div>
     </main>
@@ -546,7 +563,12 @@
     function updateNavSubtitle() {
       const t = getActiveTab();
       const el = document.getElementById('currentTabTitle');
-      if (el && t) el.textContent = t.name;
+      const printEl = document.getElementById('printName');
+
+      if (t) {
+        if (el) el.textContent = t.name;
+        if (printEl) printEl.textContent = "Elev: " + t.name;
+      }
     }
 
     function renderTabs(container, editor) {
@@ -628,7 +650,7 @@
       sel.addRange(range);
     }
 
-    // Datumknapp – ingen extra "blank rad", bara normal radbrytning
+    // Datumknapp – utan extra tom rad (bara normal radbrytning före datum)
     function insertDateHeadingAtEnd(editor) {
       // Ta bort eventuella <br> på slutet
       let html = editor.innerHTML.replace(/(<br>\s*)+$/g, "");
@@ -636,7 +658,7 @@
       const date = escapeHtml(currentDateHeading());
       const time = escapeHtml(currentTimeString());
 
-      const prefix = html ? "<br>" : ""; // radbyte före datum om något finns
+      const prefix = html ? "<br>" : ""; // en radbrytning före datum om något finns
 
       editor.innerHTML = html + `${prefix}${date}<br>${time}`;
 
