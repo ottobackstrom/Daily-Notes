@@ -374,6 +374,24 @@
       color: #30d158;
     }
 
+    /* ======= UTSKRIFT (PDF) ======= */
+    @media print {
+      body {
+        background: #ffffff;
+      }
+      .nav-bar,
+      .bottom-toolbar {
+        display: none;
+      }
+      .content {
+        padding: 0;
+      }
+      #notes {
+        box-shadow: none;
+        border-radius: 0;
+      }
+    }
+
   </style>
 </head>
 
@@ -425,6 +443,12 @@
           <button class="control-btn" id="exportBtn" type="button">
             <span class="icon">⬇️</span><span>Export .txt</span>
           </button>
+          <button class="control-btn" id="exportHtmlBtn" type="button">
+            <span class="icon">🌈</span><span>Export färg-HTML</span>
+          </button>
+          <button class="control-btn" id="printBtn" type="button">
+            <span class="icon">🖨️</span><span>PDF / Skriv ut</span>
+          </button>
           <button class="control-btn" id="themeToggleBtn" type="button">
             <span class="icon" id="themeIcon">☀️</span><span>Tema</span>
           </button>
@@ -455,6 +479,8 @@
     const STORAGE_KEY = 'timeNotesApp_v1';
     const THEME_KEY = 'timeNotesApp_theme';
     const COLOR_KEY = 'timeNotesApp_colorBehaviors';
+    const ACCESS_KEY = 'elevlogg_access_v1';   // lösenordsflagga i localStorage
+    const PASSWORD = '1234';                   // byt till ditt eget "lösenord"
 
     let state = { tabs: [], activeId: null };
     let colorBehaviors = true;
@@ -598,32 +624,31 @@
       sel.addRange(range);
     }
 
-function insertDateHeadingAtEnd(editor) {
-  // Ta bort eventuella <br> på slutet först
-  let html = editor.innerHTML.replace(/(<br>\s*)+$/g, "");
+    // Datumknapp – ingen extra "blank rad", bara normal radbrytning
+    function insertDateHeadingAtEnd(editor) {
+      // Ta bort eventuella <br> på slutet
+      let html = editor.innerHTML.replace(/(<br>\s*)+$/g, "");
 
-  const date = escapeHtml(currentDateHeading());
-  const time = escapeHtml(currentTimeString());
+      const date = escapeHtml(currentDateHeading());
+      const time = escapeHtml(currentTimeString());
 
-  // Om det finns text sedan innan → radbrytning direkt före datumet
-  const prefix = html ? "<br>" : "";
+      const prefix = html ? "<br>" : ""; // radbyte före datum om något finns
 
-  editor.innerHTML = html + `${prefix}${date}<br>${time}`;
+      editor.innerHTML = html + `${prefix}${date}<br>${time}`;
 
-  placeCaretAtEnd(editor);
+      placeCaretAtEnd(editor);
 
-  const t = getActiveTab();
-  if (t) { 
-    t.content = editor.innerHTML; 
-    saveState(); 
-  }
-}
-
+      const t = getActiveTab();
+      if (t) {
+        t.content = editor.innerHTML;
+        saveState();
+      }
+    }
 
     function behaviorClassForLabel(label) {
       const green = ["Ber om ursäkt", "Räcker upp handen"];
       if (green.includes(label)) return "behavior-green";
-      return "behavior-red"; // allt annat från snabbknapparna är "negativt"
+      return "behavior-red";
     }
 
     function insertQuickEntry(label, editor) {
@@ -645,7 +670,10 @@ function insertDateHeadingAtEnd(editor) {
       placeCaretAtEnd(editor);
 
       const t = getActiveTab();
-      if (t) { t.content = editor.innerHTML; saveState(); }
+      if (t) {
+        t.content = editor.innerHTML;
+        saveState();
+      }
     }
 
     function exportCurrentTab(editor) {
@@ -654,13 +682,66 @@ function insertDateHeadingAtEnd(editor) {
 
       const elevNamn = tab.name || "Okänd elev";
       const header = `Elev: ${elevNamn}\n\n`;
-      const body = editor.innerText || ""; // ren text utan HTML
+      const body = editor.innerText || "";
       const text = header + body;
 
       const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const filename = (elevNamn || "anteckning").replace(/\W+/g, "_") + ".txt";
 
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportCurrentTabHtml(editor) {
+      const tab = getActiveTab();
+      if (!tab) return;
+
+      const elevNamn = tab.name || "Okänd elev";
+      const safeName = (elevNamn || "anteckning").replace(/\W+/g, "_");
+      const filename = safeName + "_farg.html";
+
+      const doc =
+        `<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<title>Elevlogg – ${escapeHtml(elevNamn)}</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    white-space: pre-wrap;
+    background: #f2f2f7;
+    color: #000;
+    padding: 1rem;
+  }
+  h1 {
+    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
+  }
+  .behavior-red {
+    color: #ff3b30;
+    font-weight: 600;
+  }
+  .behavior-green {
+    color: #34c759;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<h1>Elev: ${escapeHtml(elevNamn)}</h1>
+<div>
+${editor.innerHTML}
+</div>
+</body>
+</html>`;
+
+      const blob = new Blob([doc], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
       a.download = filename;
@@ -699,6 +780,31 @@ function insertDateHeadingAtEnd(editor) {
       el.textContent = colorBehaviors ? "Färgade beteenden: På" : "Färgade beteenden: Av";
     }
 
+    // Enkel lösenordsspärr (första gången per webbläsare)
+    function checkAccess() {
+      const unlocked = localStorage.getItem(ACCESS_KEY);
+      if (unlocked === 'true') {
+        return true;
+      }
+
+      let tries = 0;
+      while (tries < 3) {
+        const input = prompt('Ange lösenord för att öppna Elevloggen:');
+        if (input === null) {
+          break;
+        }
+        if (input === PASSWORD) {
+          localStorage.setItem(ACCESS_KEY, 'true');
+          return true;
+        }
+        alert('Fel lösenord, försök igen.');
+        tries++;
+      }
+
+      document.body.innerHTML = '<p style="font-family:-apple-system;padding:1rem;">Åtkomst nekad.</p>';
+      return false;
+    }
+
     // Stoppa pinch-zoom
     document.addEventListener('touchmove', function (event) {
       if (event.touches.length > 1) {
@@ -717,6 +823,11 @@ function insertDateHeadingAtEnd(editor) {
     }, false);
 
     window.onload = () => {
+      // Lösenord först
+      if (!checkAccess()) {
+        return;
+      }
+
       const editor = document.getElementById("notes");
       const tabs = document.getElementById("tabs");
       const addTabBtn = document.getElementById("addTabBtn");
@@ -724,6 +835,8 @@ function insertDateHeadingAtEnd(editor) {
       const deleteTabBtn = document.getElementById("deleteTabBtn");
       const insertDateBtn = document.getElementById("insertDateBtn");
       const exportBtn = document.getElementById("exportBtn");
+      const exportHtmlBtn = document.getElementById("exportHtmlBtn");
+      const printBtn = document.getElementById("printBtn");
       const themeToggleBtn = document.getElementById("themeToggleBtn");
       const toggleColorBtn = document.getElementById("toggleColorBtn");
 
@@ -755,6 +868,8 @@ function insertDateHeadingAtEnd(editor) {
       deleteTabBtn.onclick = () => deleteTab(tabs, editor);
       insertDateBtn.onclick = () => insertDateHeadingAtEnd(editor);
       exportBtn.onclick = () => exportCurrentTab(editor);
+      exportHtmlBtn.onclick = () => exportCurrentTabHtml(editor);
+      printBtn.onclick = () => window.print();
 
       document.querySelectorAll(".quick-btn").forEach(btn => {
         btn.onclick = () => insertQuickEntry(btn.dataset.label, editor);
