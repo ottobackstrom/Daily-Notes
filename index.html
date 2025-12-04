@@ -159,9 +159,12 @@
       padding: 0 0.25rem;
     }
 
-    /* Visas bara vid utskrift */
+    /* Namn för utskrift */
     .print-student-name {
-      display: none;
+      display: none; /* visas bara vid @media print */
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
     }
 
     /* Rich text-logg istället för textarea */
@@ -385,8 +388,8 @@
         background: #ffffff;
       }
 
-      .hint {
-        display: none !important;
+      .hint { 
+        display: none !important; 
       }
 
       .nav-bar,
@@ -396,9 +399,6 @@
 
       .print-student-name {
         display: block !important;
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 10px;
       }
 
       .content {
@@ -438,8 +438,10 @@
       <p class="hint">
         Varje ny rad börjar automatiskt med aktuell tid (HH:MM). Använd flikarna för olika elever.
       </p>
-      <!-- Namnrad som bara syns i utskrift -->
+
+      <!-- Visas bara vid utskrift (PDF) -->
       <div class="print-student-name" id="printName"></div>
+
       <!-- contenteditable istället för textarea -->
       <div id="notes" contenteditable="true"></div>
     </main>
@@ -501,7 +503,7 @@
     const THEME_KEY = 'timeNotesApp_theme';
     const COLOR_KEY = 'timeNotesApp_colorBehaviors';
     const ACCESS_KEY = 'elevlogg_access_v1';   // lösenordsflagga i localStorage
-    const PASSWORD = '1234';                   // byt till ditt eget "lösenord"
+    const PASSWORD = '1234';                   // BYT detta till ditt eget "lösenord"
 
     let state = { tabs: [], activeId: null };
     let colorBehaviors = true;
@@ -650,15 +652,15 @@
       sel.addRange(range);
     }
 
-    // Datumknapp – utan extra tom rad (bara normal radbrytning före datum)
+    // Datumknapp – ingen extra tom rad, bara normal radbrytning
     function insertDateHeadingAtEnd(editor) {
-      // Ta bort eventuella <br> på slutet
+      // Ta bort ev. <br> på slutet
       let html = editor.innerHTML.replace(/(<br>\s*)+$/g, "");
 
       const date = escapeHtml(currentDateHeading());
       const time = escapeHtml(currentTimeString());
 
-      const prefix = html ? "<br>" : ""; // en radbrytning före datum om något finns
+      const prefix = html ? "<br>" : ""; // radbyte före datum om något finns
 
       editor.innerHTML = html + `${prefix}${date}<br>${time}`;
 
@@ -677,36 +679,36 @@
       return "behavior-red";
     }
 
-   function insertQuickEntry(label, editor, options = {}) {
-  const { focus = true } = options;  // styr om vi ska flytta caret/fokusera
+    // options.focus styr om caret ska flyttas/fokus sättas
+    function insertQuickEntry(label, editor, options = {}) {
+      const { focus = true } = options;
 
-  const timeStr = currentTimeString();
-  const prefix = editor.innerHTML.trim() ? "<br><br>" : "";
+      const timeStr = currentTimeString();
+      const prefix = editor.innerHTML.trim() ? "<br><br>" : "";
 
-  let labelHtml = "";
-  if (label) {
-    if (colorBehaviors) {
-      const cls = behaviorClassForLabel(label);
-      labelHtml = ` <span class="${cls}">${escapeHtml(label)}</span>`;
-    } else {
-      labelHtml = " " + escapeHtml(label);
+      let labelHtml = "";
+      if (label) {
+        if (colorBehaviors) {
+          const cls = behaviorClassForLabel(label);
+          labelHtml = ` <span class="${cls}">${escapeHtml(label)}</span>`;
+        } else {
+          labelHtml = " " + escapeHtml(label);
+        }
+      }
+
+      const html = `${prefix}${escapeHtml(timeStr)}${labelHtml}`;
+      editor.innerHTML = editor.innerHTML + html;
+
+      if (focus) {
+        placeCaretAtEnd(editor);
+      }
+
+      const t = getActiveTab();
+      if (t) {
+        t.content = editor.innerHTML;
+        saveState();
+      }
     }
-  }
-
-  const html = `${prefix}${escapeHtml(timeStr)}${labelHtml}`;
-  editor.innerHTML = editor.innerHTML + html;
-
-  if (focus) {
-    placeCaretAtEnd(editor);
-  }
-
-  const t = getActiveTab();
-  if (t) {
-    t.content = editor.innerHTML;
-    saveState();
-  }
-}
-
 
     function exportCurrentTab(editor) {
       const tab = getActiveTab();
@@ -901,22 +903,29 @@ ${editor.innerHTML}
       insertDateBtn.onclick = () => insertDateHeadingAtEnd(editor);
       exportBtn.onclick = () => exportCurrentTab(editor);
       exportHtmlBtn.onclick = () => exportCurrentTabHtml(editor);
-      printBtn.onclick = () => window.print();
+
+      // Se till att elevens namn sätts precis innan utskrift (extra säkert på mobil)
+      printBtn.onclick = () => {
+        const t = getActiveTab();
+        const printEl = document.getElementById("printName");
+        if (t && printEl) {
+          printEl.textContent = "Elev: " + t.name;
+        }
+        window.print();
+      };
 
       document.querySelectorAll(".quick-btn").forEach(btn => {
-  // focus: false → ingen caret/fokus → tangentbordet poppar inte upp
-  btn.onclick = () => insertQuickEntry(btn.dataset.label, editor, { focus: false });
-});
+        // focus:false → ingen caret/fokus → tangentbordet poppar inte upp på mobil
+        btn.onclick = () => insertQuickEntry(btn.dataset.label, editor, { focus: false });
+      });
 
-
+      // Enter → ny tidsrad längst ned (utan label), caret ska stanna i editorn
       editor.addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    // här vill vi ha caret längst ned och tangentbordet kvar = focus: true
-    insertQuickEntry("", editor, { focus: true });
-  }
-});
-
+        if (e.key === "Enter") {
+          e.preventDefault();
+          insertQuickEntry("", editor, { focus: true });
+        }
+      });
 
       editor.addEventListener("input", () => {
         const t = getActiveTab();
