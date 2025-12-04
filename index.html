@@ -677,30 +677,36 @@
       return "behavior-red";
     }
 
-    function insertQuickEntry(label, editor) {
-      const timeStr = currentTimeString();
-      const prefix = editor.innerHTML.trim() ? "<br><br>" : "";
+   function insertQuickEntry(label, editor, options = {}) {
+  const { focus = true } = options;  // styr om vi ska flytta caret/fokusera
 
-      let labelHtml = "";
-      if (label) {
-        if (colorBehaviors) {
-          const cls = behaviorClassForLabel(label);
-          labelHtml = ` <span class="${cls}">${escapeHtml(label)}</span>`;
-        } else {
-          labelHtml = " " + escapeHtml(label);
-        }
-      }
+  const timeStr = currentTimeString();
+  const prefix = editor.innerHTML.trim() ? "<br><br>" : "";
 
-      const html = `${prefix}${escapeHtml(timeStr)}${labelHtml}`;
-      editor.innerHTML = editor.innerHTML + html;
-      placeCaretAtEnd(editor);
-
-      const t = getActiveTab();
-      if (t) {
-        t.content = editor.innerHTML;
-        saveState();
-      }
+  let labelHtml = "";
+  if (label) {
+    if (colorBehaviors) {
+      const cls = behaviorClassForLabel(label);
+      labelHtml = ` <span class="${cls}">${escapeHtml(label)}</span>`;
+    } else {
+      labelHtml = " " + escapeHtml(label);
     }
+  }
+
+  const html = `${prefix}${escapeHtml(timeStr)}${labelHtml}`;
+  editor.innerHTML = editor.innerHTML + html;
+
+  if (focus) {
+    placeCaretAtEnd(editor);
+  }
+
+  const t = getActiveTab();
+  if (t) {
+    t.content = editor.innerHTML;
+    saveState();
+  }
+}
+
 
     function exportCurrentTab(editor) {
       const tab = getActiveTab();
