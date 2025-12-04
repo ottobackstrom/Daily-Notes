@@ -36,8 +36,6 @@
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
       background: var(--ios-bg);
       color: var(--ios-label);
-      width: 100%;
-      overflow-x: hidden;
     }
 
     .app {
@@ -56,7 +54,6 @@
       position: sticky;
       top: 0;
       z-index: 10;
-      width: 100%;
       background: rgba(242, 242, 247, 0.95);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
@@ -162,7 +159,8 @@
       padding: 0 0.25rem;
     }
 
-    textarea {
+    /* Rich text-logg istället för textarea */
+    #notes {
       margin-top: 0.25rem;
       flex: 1;
       width: 100%;
@@ -174,13 +172,25 @@
       line-height: 1.4;
       background: var(--ios-surface);
       color: var(--ios-label);
-      resize: none;
       outline: none;
       box-shadow: 0 0 0 0.5px rgba(60,60,67,0.15);
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
     }
 
-    textarea:focus {
+    #notes:focus {
       box-shadow: 0 0 0 1px rgba(0,122,255,0.5);
+    }
+
+    /* Färgade beteenden */
+    .behavior-red {
+      color: var(--ios-destructive);
+      font-weight: 600;
+    }
+    .behavior-green {
+      color: var(--ios-success);
+      font-weight: 600;
     }
 
     /* ======= NEDRE VERKTYGSPANEL ======= */
@@ -189,12 +199,11 @@
       position: sticky;
       bottom: 0;
       z-index: 5;
-      width: 100%;
       background: rgba(242, 242, 247, 0.97);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-top: 0.5px solid var(--ios-separator);
-      padding: 0.45rem 0.75rem 1.5rem; /* extra luft under knapparna */
+      padding: 0.45rem 0.75rem 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 0.45rem;
@@ -220,12 +229,6 @@
       align-items: center;
     }
 
-    .bottom-label {
-      font-size: 11px;
-      color: var(--ios-secondary);
-      margin-top: 0.15rem;
-    }
-
     /* App-kontrollknappar */
     .control-btn {
       display: inline-flex;
@@ -235,7 +238,7 @@
       border: 0.5px solid rgba(60,60,67,0.25);
       background: var(--ios-surface);
       font-size: 12px;
-      padding: 0.35rem 0.8rem;
+      padding: 0.25rem 0.6rem;
       color: #3c3c43;
     }
 
@@ -248,6 +251,10 @@
       border-color: rgba(255,59,48,0.35);
     }
 
+    .control-btn:active {
+      background: #e5e5ea;
+    }
+
     .control-btn.primary {
       color: var(--ios-accent);
       border-color: rgba(0,122,255,0.45);
@@ -257,7 +264,7 @@
     .chip-btn {
       border-radius: var(--radius-pill);
       border: 0.5px solid rgba(60,60,67,0.2);
-      padding: 0.3rem 0.85rem;
+      padding: 0.25rem 0.7rem;
       background: var(--ios-surface);
       font-size: 12px;
       color: #3c3c43;
@@ -275,6 +282,12 @@
 
     .chip-btn:active {
       background: #e5e5ea;
+    }
+
+    .bottom-label {
+      font-size: 11px;
+      color: var(--ios-secondary);
+      margin-top: 0.15rem;
     }
 
     /* ======= DARK MODE ======= */
@@ -308,7 +321,7 @@
       background: #000000;
     }
 
-    body.dark textarea {
+    body.dark #notes {
       background: #1c1c1e;
       color: #ffffff;
       box-shadow: 0 0 0 0.5px rgba(84,84,88,0.6);
@@ -353,6 +366,14 @@
       background: rgba(48,209,88,0.16);
     }
 
+    body.dark .behavior-red {
+      color: #ff453a;
+    }
+
+    body.dark .behavior-green {
+      color: #30d158;
+    }
+
   </style>
 </head>
 
@@ -380,7 +401,8 @@
       <p class="hint">
         Varje ny rad börjar automatiskt med aktuell tid (HH:MM). Använd flikarna för olika elever.
       </p>
-      <textarea id="notes" placeholder="Ny logg..."></textarea>
+      <!-- contenteditable istället för textarea -->
+      <div id="notes" contenteditable="true"></div>
     </main>
 
     <!-- NEDRE VERKTYGSPANEL -->
@@ -406,6 +428,9 @@
           <button class="control-btn" id="themeToggleBtn" type="button">
             <span class="icon" id="themeIcon">☀️</span><span>Tema</span>
           </button>
+          <button class="control-btn" id="toggleColorBtn" type="button">
+            <span class="icon">🎨</span><span id="colorModeLabel">Färgade beteenden: På</span>
+          </button>
         </div>
       </div>
 
@@ -429,24 +454,18 @@
   <script>
     const STORAGE_KEY = 'timeNotesApp_v1';
     const THEME_KEY = 'timeNotesApp_theme';
+    const COLOR_KEY = 'timeNotesApp_colorBehaviors';
+
     let state = { tabs: [], activeId: null };
+    let colorBehaviors = true;
 
-    function loadState() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        try { state = JSON.parse(raw); }
-        catch { state = { tabs: [], activeId: null }; }
-      }
-      if (state.tabs.length === 0) {
-        const id = String(Date.now());
-        state.tabs = [{ id, name: "Elev 1", content: "" }];
-        state.activeId = id;
-        saveState();
-      }
-    }
-
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
     function currentTimeString() {
@@ -472,6 +491,24 @@
       return `${dag} ${datum} ${månad} ${år}`;
     }
 
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try { state = JSON.parse(raw); }
+        catch { state = { tabs: [], activeId: null }; }
+      }
+      if (!state.tabs || state.tabs.length === 0) {
+        const id = String(Date.now());
+        state.tabs = [{ id, name: "Elev 1", content: "" }];
+        state.activeId = id;
+        saveState();
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
     function getActiveTab() {
       return state.tabs.find(t => t.id === state.activeId);
     }
@@ -482,40 +519,40 @@
       if (el && t) el.textContent = t.name;
     }
 
-    function renderTabs(container, ta) {
+    function renderTabs(container, editor) {
       container.innerHTML = "";
       state.tabs.forEach(tab => {
         const b = document.createElement("button");
         b.className = "tab" + (tab.id === state.activeId ? " active" : "");
         b.textContent = tab.name;
         b.type = "button";
-        b.onclick = () => switchTab(tab.id, container, ta);
+        b.onclick = () => switchTab(tab.id, container, editor);
         container.appendChild(b);
       });
       updateNavSubtitle();
     }
 
-    function switchTab(id, container, ta) {
+    function switchTab(id, container, editor) {
       const current = getActiveTab();
-      if (current) current.content = ta.value;
+      if (current) current.content = editor.innerHTML;
       state.activeId = id;
       saveState();
       const next = getActiveTab();
-      ta.value = next.content || "";
-      ensureFirstLineHasDateAndTime(ta);
-      renderTabs(container, ta);
+      editor.innerHTML = next.content || "";
+      ensureFirstLineHasDateAndTime(editor);
+      renderTabs(container, editor);
     }
 
-    function addTab(container, ta) {
+    function addTab(container, editor) {
       const name = prompt("Namn på ny elev:");
       if (!name) return;
       const id = Date.now() + "_" + Math.random().toString(16).slice(2);
       state.tabs.push({ id, name: name.trim(), content: "" });
       state.activeId = id;
       saveState();
-      renderTabs(container, ta);
-      ta.value = "";
-      ensureFirstLineHasDateAndTime(ta);
+      renderTabs(container, editor);
+      editor.innerHTML = "";
+      ensureFirstLineHasDateAndTime(editor);
     }
 
     function renameTab(container) {
@@ -525,10 +562,10 @@
       if (!n) return;
       t.name = n.trim();
       saveState();
-      renderTabs(container);
+      renderTabs(container, document.getElementById("notes"));
     }
 
-    function deleteTab(container, ta) {
+    function deleteTab(container, editor) {
       if (state.tabs.length <= 1) {
         alert("Minst en flik krävs.");
         return;
@@ -538,58 +575,86 @@
       state.tabs = state.tabs.filter(x => x.id !== t.id);
       state.activeId = state.tabs[0].id;
       saveState();
-      renderTabs(container, ta);
-      ta.value = getActiveTab().content || "";
-      ensureFirstLineHasDateAndTime(ta);
+      renderTabs(container, editor);
+      editor.innerHTML = getActiveTab().content || "";
+      ensureFirstLineHasDateAndTime(editor);
     }
 
-    function ensureFirstLineHasDateAndTime(ta) {
-      if (!ta.value.trim()) {
-        ta.value = currentDateHeading() + "\n" + currentTimeString();
+    function ensureFirstLineHasDateAndTime(editor) {
+      if (!editor.innerText.trim()) {
+        const date = escapeHtml(currentDateHeading());
+        const time = escapeHtml(currentTimeString());
+        editor.innerHTML = `${date}<br>${time}`;
       }
     }
 
-    function insertDateHeadingAtCursor(ta) {
-      const start = ta.selectionStart;
-      const before = ta.value.slice(0, start);
-      const after = ta.value.slice(start);
-      const insert = "\n" + currentDateHeading() + "\n" + currentTimeString();
-      ta.value = before + insert + after;
-      const newPos = before.length + insert.length;
-      ta.selectionStart = ta.selectionEnd = newPos;
-      const t = getActiveTab();
-      if (t) { t.content = ta.value; saveState(); }
+    function placeCaretAtEnd(el) {
+      el.focus();
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
     }
 
-    function exportCurrentTab(ta) {
+    function insertDateHeadingAtEnd(editor) {
+      const prefix = editor.innerHTML.trim() ? "<br><br>" : "";
+      const date = escapeHtml(currentDateHeading());
+      const time = escapeHtml(currentTimeString());
+      editor.innerHTML = editor.innerHTML + `${prefix}${date}<br>${time}`;
+      placeCaretAtEnd(editor);
+      const t = getActiveTab();
+      if (t) { t.content = editor.innerHTML; saveState(); }
+    }
+
+    function behaviorClassForLabel(label) {
+      const green = ["Ber om ursäkt", "Räcker upp handen"];
+      if (green.includes(label)) return "behavior-green";
+      return "behavior-red"; // allt annat från snabbknapparna är "negativt"
+    }
+
+    function insertQuickEntry(label, editor) {
+      const timeStr = currentTimeString();
+      const prefix = editor.innerHTML.trim() ? "<br><br>" : "";
+
+      let labelHtml = "";
+      if (label) {
+        if (colorBehaviors) {
+          const cls = behaviorClassForLabel(label);
+          labelHtml = ` <span class="${cls}">${escapeHtml(label)}</span>`;
+        } else {
+          labelHtml = " " + escapeHtml(label);
+        }
+      }
+
+      const html = `${prefix}${escapeHtml(timeStr)}${labelHtml}`;
+      editor.innerHTML = editor.innerHTML + html;
+      placeCaretAtEnd(editor);
+
+      const t = getActiveTab();
+      if (t) { t.content = editor.innerHTML; saveState(); }
+    }
+
+    function exportCurrentTab(editor) {
       const tab = getActiveTab();
       if (!tab) return;
+
       const elevNamn = tab.name || "Okänd elev";
       const header = `Elev: ${elevNamn}\n\n`;
-      const body = ta.value || "";
+      const body = editor.innerText || ""; // ren text utan HTML
       const text = header + body;
+
       const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const filename = (elevNamn || "anteckning").replace(/\W+/g, "_") + ".txt";
+
       const a = document.createElement("a");
       a.href = url;
       a.download = filename;
       a.click();
       URL.revokeObjectURL(url);
     }
-
-function insertQuickEntry(label, ta) {
-  // Lägg alltid till längst ned i texten
-  const insert = "\n\n" + currentTimeString() + label;
-  ta.value = ta.value + insert;
-
-  // Flytta markören till slutet
-  ta.selectionStart = ta.selectionEnd = ta.value.length;
-
-  const t = getActiveTab();
-  if (t) { t.content = ta.value; saveState(); }
-}
-
 
     function loadTheme() {
       return localStorage.getItem(THEME_KEY) || "light";
@@ -604,6 +669,22 @@ function insertQuickEntry(label, ta) {
       document.body.classList.toggle("dark", dark);
       const iconSpan = document.getElementById("themeIcon");
       if (iconSpan) iconSpan.textContent = dark ? "🌙" : "☀️";
+    }
+
+    function loadColorPref() {
+      const raw = localStorage.getItem(COLOR_KEY);
+      if (raw === null) return true;
+      return raw === "true";
+    }
+
+    function saveColorPref(val) {
+      localStorage.setItem(COLOR_KEY, String(val));
+    }
+
+    function updateColorToggleLabel() {
+      const el = document.getElementById("colorModeLabel");
+      if (!el) return;
+      el.textContent = colorBehaviors ? "Färgade beteenden: På" : "Färgade beteenden: Av";
     }
 
     // Stoppa pinch-zoom
@@ -624,7 +705,7 @@ function insertQuickEntry(label, ta) {
     }, false);
 
     window.onload = () => {
-      const ta = document.getElementById("notes");
+      const editor = document.getElementById("notes");
       const tabs = document.getElementById("tabs");
       const addTabBtn = document.getElementById("addTabBtn");
       const renameTabBtn = document.getElementById("renameTabBtn");
@@ -632,41 +713,14 @@ function insertQuickEntry(label, ta) {
       const insertDateBtn = document.getElementById("insertDateBtn");
       const exportBtn = document.getElementById("exportBtn");
       const themeToggleBtn = document.getElementById("themeToggleBtn");
+      const toggleColorBtn = document.getElementById("toggleColorBtn");
 
       loadState();
-      renderTabs(tabs, ta);
-      ta.value = getActiveTab().content || "";
-      ensureFirstLineHasDateAndTime(ta);
+      renderTabs(tabs, editor);
+      editor.innerHTML = getActiveTab().content || "";
+      ensureFirstLineHasDateAndTime(editor);
 
-      addTabBtn.onclick = () => addTab(tabs, ta);
-      renameTabBtn.onclick = () => renameTab(tabs);
-      deleteTabBtn.onclick = () => deleteTab(tabs, ta);
-      insertDateBtn.onclick = () => insertDateHeadingAtCursor(ta);
-      exportBtn.onclick = () => exportCurrentTab(ta);
-
-      document.querySelectorAll(".quick-btn").forEach(btn => {
-        btn.onclick = () => insertQuickEntry(btn.dataset.label, ta);
-      });
-
-      ta.addEventListener("keydown", e => {
-        if (e.key === "Enter") {
-  e.preventDefault();
-
-  const insert = "\n\n" + currentTimeString();
-  ta.value = ta.value + insert;
-
-  ta.selectionStart = ta.selectionEnd = ta.value.length;
-
-  const t = getActiveTab();
-  if (t) { t.content = ta.value; saveState(); }
-}
-      });
-
-      ta.addEventListener("input", () => {
-        const t = getActiveTab();
-        if (t) { t.content = ta.value; saveState(); }
-      });
-
+      // Tema
       let theme = loadTheme();
       applyTheme(theme);
       themeToggleBtn.onclick = () => {
@@ -674,6 +728,41 @@ function insertQuickEntry(label, ta) {
         applyTheme(theme);
         saveTheme(theme);
       };
+
+      // Färgade beteenden
+      colorBehaviors = loadColorPref();
+      updateColorToggleLabel();
+      toggleColorBtn.onclick = () => {
+        colorBehaviors = !colorBehaviors;
+        saveColorPref(colorBehaviors);
+        updateColorToggleLabel();
+      };
+
+      addTabBtn.onclick = () => addTab(tabs, editor);
+      renameTabBtn.onclick = () => renameTab(tabs);
+      deleteTabBtn.onclick = () => deleteTab(tabs, editor);
+      insertDateBtn.onclick = () => insertDateHeadingAtEnd(editor);
+      exportBtn.onclick = () => exportCurrentTab(editor);
+
+      document.querySelectorAll(".quick-btn").forEach(btn => {
+        btn.onclick = () => insertQuickEntry(btn.dataset.label, editor);
+      });
+
+      // Enter → ny tidsrad längst ned (utan label)
+      editor.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          insertQuickEntry("", editor);
+        }
+      });
+
+      editor.addEventListener("input", () => {
+        const t = getActiveTab();
+        if (t) {
+          t.content = editor.innerHTML;
+          saveState();
+        }
+      });
     };
   </script>
 </body>
