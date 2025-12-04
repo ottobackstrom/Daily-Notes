@@ -598,15 +598,27 @@
       sel.addRange(range);
     }
 
-    function insertDateHeadingAtEnd(editor) {
-      const prefix = editor.innerHTML.trim() ? "<br><br>" : "";
-      const date = escapeHtml(currentDateHeading());
-      const time = escapeHtml(currentTimeString());
-      editor.innerHTML = editor.innerHTML + `${prefix}${date}<br>${time}`;
-      placeCaretAtEnd(editor);
-      const t = getActiveTab();
-      if (t) { t.content = editor.innerHTML; saveState(); }
-    }
+function insertDateHeadingAtEnd(editor) {
+  // Ta bort eventuella <br> på slutet först
+  let html = editor.innerHTML.replace(/(<br>\s*)+$/g, "");
+
+  const date = escapeHtml(currentDateHeading());
+  const time = escapeHtml(currentTimeString());
+
+  // Om det finns text sedan innan → radbrytning direkt före datumet
+  const prefix = html ? "<br>" : "";
+
+  editor.innerHTML = html + `${prefix}${date}<br>${time}`;
+
+  placeCaretAtEnd(editor);
+
+  const t = getActiveTab();
+  if (t) { 
+    t.content = editor.innerHTML; 
+    saveState(); 
+  }
+}
+
 
     function behaviorClassForLabel(label) {
       const green = ["Ber om ursäkt", "Räcker upp handen"];
