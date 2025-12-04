@@ -578,17 +578,18 @@
       URL.revokeObjectURL(url);
     }
 
-    function insertQuickEntry(label, ta) {
-      const start = ta.selectionStart;
-      const before = ta.value.slice(0, start);
-      const after = ta.value.slice(start);
-      const insert = "\n\n" + currentTimeString() + label;
-      ta.value = before + insert + after;
-      const newPos = before.length + insert.length;
-      ta.selectionStart = ta.selectionEnd = newPos;
-      const t = getActiveTab();
-      if (t) { t.content = ta.value; saveState(); }
-    }
+function insertQuickEntry(label, ta) {
+  // Lägg alltid till längst ned i texten
+  const insert = "\n\n" + currentTimeString() + label;
+  ta.value = ta.value + insert;
+
+  // Flytta markören till slutet
+  ta.selectionStart = ta.selectionEnd = ta.value.length;
+
+  const t = getActiveTab();
+  if (t) { t.content = ta.value; saveState(); }
+}
+
 
     function loadTheme() {
       return localStorage.getItem(THEME_KEY) || "light";
@@ -649,17 +650,16 @@
 
       ta.addEventListener("keydown", e => {
         if (e.key === "Enter") {
-          e.preventDefault();
-          const pos = ta.selectionStart;
-          const before = ta.value.slice(0, pos);
-          const after = ta.value.slice(pos);
-          const insert = "\n\n" + currentTimeString();
-          ta.value = before + insert + after;
-          const newPos = before.length + insert.length;
-          ta.selectionStart = ta.selectionEnd = newPos;
-          const t = getActiveTab();
-          if (t) { t.content = ta.value; saveState(); }
-        }
+  e.preventDefault();
+
+  const insert = "\n\n" + currentTimeString();
+  ta.value = ta.value + insert;
+
+  ta.selectionStart = ta.selectionEnd = ta.value.length;
+
+  const t = getActiveTab();
+  if (t) { t.content = ta.value; saveState(); }
+}
       });
 
       ta.addEventListener("input", () => {
